@@ -29,13 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $email = $conn->real_escape_string($_POST['email']);
         $rempresa = $conn->real_escape_string($_POST['rempresa']);
         $raprendiz = $conn->real_escape_string($_POST['raprendiz']);
+        $telefoneemp = $conn->real_escape_string($_POST['telefoneemp']);
         $cep = $conn->real_escape_string($_POST['cep']);
         $cidade = $conn->real_escape_string($_POST['cidade']);
         $endereco = $conn->real_escape_string($_POST['endereco']);
         $codatividade = $conn->real_escape_string($_POST['codatividade']);
 
-        $sql = "INSERT INTO cadempresas (cnpj, rsocial, nfantasia, email, rempresa, raprendiz, cep, cidade, endereco, codatividade)
-                VALUES ('$cnpj', '$rsocial', '$nfantasia', '$email', '$rempresa', '$raprendiz', '$cep', '$cidade', '$endereco', '$codatividade')";
+        $sql = "INSERT INTO cadempresas (cnpj, rsocial, nfantasia, email, rempresa, raprendiz, telefoneemp, cep, cidade, endereco, codatividade)
+                VALUES ('$cnpj', '$rsocial', '$nfantasia', '$email', '$rempresa', '$raprendiz', '$telefoneemp', '$cep', '$cidade', '$endereco', '$codatividade')";
         $conn->query($sql);
         header("Location: empresas.php");
         exit;
@@ -47,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $email = $conn->real_escape_string($_POST['email']);
         $rempresa = $conn->real_escape_string($_POST['rempresa']);
         $raprendiz = $conn->real_escape_string($_POST['raprendiz']);
+        $telefoneemp = $conn->real_escape_string($_POST['telefoneemp']);
         $cep = $conn->real_escape_string($_POST['cep']);
         $cidade = $conn->real_escape_string($_POST['cidade']);
         $endereco = $conn->real_escape_string($_POST['endereco']);
@@ -54,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         $sql = "UPDATE cadempresas SET 
                 cnpj='$cnpj', rsocial='$rsocial', nfantasia='$nfantasia', email='$email', rempresa='$rempresa', 
-                raprendiz='$raprendiz', cep='$cep', cidade='$cidade', endereco='$endereco', codatividade='$codatividade' 
+                raprendiz='$raprendiz', telefoneemp='$telefoneemp', cep='$cep', cidade='$cidade', endereco='$endereco', codatividade='$codatividade' 
                 WHERE id=$id";
         $conn->query($sql);
         header("Location: empresas.php");
@@ -183,7 +185,7 @@ $result = $conn->query("SELECT * FROM cadempresas");
         #popupForm {
             display: none;
             position: fixed;
-            top: 50%;
+            top: 40%;
             left: 50%;
             width: 420px;
             max-height: 80vh;
@@ -274,10 +276,12 @@ $result = $conn->query("SELECT * FROM cadempresas");
             document.getElementById('email').value = record.email;
             document.getElementById('rempresa').value = record.rempresa;
             document.getElementById('raprendiz').value = record.raprendiz;
+            document.getElementById('telefoneemp').value = record.telefoneemp;
             document.getElementById('cep').value = record.cep;
             document.getElementById('cidade').value = record.cidade;
             document.getElementById('endereco').value = record.endereco;
             document.getElementById('codatividade').value = record.codatividade;
+            
 
             // Make fields editable
             var inputs = document.querySelectorAll('#recordForm input');
@@ -290,14 +294,17 @@ $result = $conn->query("SELECT * FROM cadempresas");
     </script>
 </head>
 <body>
-   <div style="display: flex; min-height: 100vh;">
+   
+    <div style="display: flex; min-height: 100vh;">
         <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
             <a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Início</a>
             <a href="cadastroaprendizes.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Cadastro</a>
             <a href="cbos.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">CBO</a>
             <a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Empresas</a>
             <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
+            <a href="Contrato.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Contrato Modelo</a>
             <a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Ficha</a>
+            <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
             <a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px;">Sair</a>
         </div>
     <div id="main-container">
@@ -374,6 +381,10 @@ $result = $conn->query("SELECT * FROM cadempresas");
                         <label for="endereco">Endereço</label>
                         <input type="text" id="endereco" name="endereco" />
                     </div>
+                      <div class="form-group">
+                        <label for="telefoneemp">Telefone</label>
+                        <input type="text" id="telefoneemp" name="telefoneemp" />
+                    </div>
                     <div class="form-group">
                         <label for="codatividade">Código Atividade</label>
                         <input type="text" id="codatividade" name="codatividade" />
@@ -409,3 +420,5 @@ $result = $conn->query("SELECT * FROM cadempresas");
 <?php
 $conn->close();
 ?>
+
+Formulário empresa

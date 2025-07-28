@@ -24,7 +24,8 @@
 		<form action="login.php" method="post">
 			<h1>Acesso - IAQ</h1>
 			<div>
-				<input type="text"  placeholder="Username" name="usuario" class="form-control" id="usuario">
+				<input type="text"  placeholder="Username" name="usuario" class="form-control" id="password">
+				
 			</div>
 			<div>
 				<input type="password"  placeholder="Senha" name="senha" class="form-control" id="password">

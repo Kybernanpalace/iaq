@@ -46,7 +46,7 @@ if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $stmt = $pdo->prepare("DELETE FROM cadcbos WHERE id = ?");
     $stmt->execute([$id]);
-    header("Location: teste.php");
+    header("Location: cbos.php");
     exit;
 }
 
@@ -66,16 +66,18 @@ $cadcbos_items = $stmt->fetchAll();
 </head>
 <body style="background-color:white;">
 
-<div style="display: flex; min-height: 100vh;">
-    <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
-        <a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Início</a>
-        <a href="cadastroaprendizes.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Cadastro</a>
-        <a href="cbos.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">CBO</a>
-        <a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Empresas</a>
-        <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
-        <a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Ficha</a>
-        <a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px;">Sair</a>
-    </div>
+ <div style="display: flex; min-height: 100vh;">
+        <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
+            <a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Início</a>
+            <a href="cadastroaprendizes.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Cadastro</a>
+            <a href="cbos.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">CBO</a>
+            <a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Empresas</a>
+            <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
+            <a href="Contrato.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Contrato Modelo</a>
+            <a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Ficha</a>
+            <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
+            <a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px;">Sair</a>
+        </div>
 
     <div style="flex-grow: 1; padding: 20px; overflow-y: auto;">
         <h2>CBOS - Itens Cadastrados</h2>

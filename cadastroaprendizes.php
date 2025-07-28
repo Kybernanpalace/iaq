@@ -51,7 +51,7 @@ $cadempresas = $stmtEmpresas->fetchAll();
         $nescolaridade = $_POST['nescolaridade'] ?? null;
         $escola = $_POST['escola'] ?? '';
         $reservista = $_POST['reservista'] ?? 'Não';
-        $escolaridade = $_POST['escolaridade'] ?? '';
+        $dfcontratacao = $_POST['dfcontratacao'] ?? '';
         $jornada = $_POST['jornada'] ?? '';
         $hrtrabalho = $_POST['hrtrabalho'] ?? '';
         $salario = $_POST['salario'] ?? '';
@@ -94,16 +94,16 @@ $cadempresas = $stmtEmpresas->fetchAll();
         if ($id) {
             // Update existing record
             if ($foto) {
-                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, escolaridade=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
-                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $escolaridade, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
+                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
+                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
             } else {
-                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, escolaridade=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, cbo=?, empresa=? WHERE id=?");
-                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $escolaridade, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa, $id]);
+                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, cbo=?, empresa=? WHERE id=?");
+                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa, $id]);
             }
         } else {
             // Insert new record
-            $stmt = $pdo->prepare("INSERT INTO cadcandidato (nome, mae, pai, nascimento, telefone, sexo, email, cpf, cep, cidade, endereco, nctps, sctps, nescolaridade, escola, reservista, escolaridade, jornada, hrtrabalho, salario, dtcontratacao, duracaodocurso, dtrabalho, dcurso, hrcurso, dtcursoinicial, dtcursofinal, cbo, empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $escolaridade, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa]);
+            $stmt = $pdo->prepare("INSERT INTO cadcandidato (nome, mae, pai, nascimento, telefone, sexo, email, cpf, cep, cidade, endereco, nctps, sctps, nescolaridade, escola, reservista, dfcontratacao, jornada, hrtrabalho, salario, dtcontratacao, duracaodocurso, dtrabalho, dcurso, hrcurso, dtcursoinicial, dtcursofinal, cbo, empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa]);
         }
         header("Location: cadastroaprendizes.php");
         exit;
@@ -138,17 +138,18 @@ $candidates = $stmt->fetchAll();
 </nav>
 
 <div class="d-flex">
-  <body style="background-color:white;">
+ <body style="background-color:white;">
 
-    
-      <div style="display: flex; min-height: 100vh;">
+ <div style="display: flex; min-height: 100vh;">
         <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
             <a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Início</a>
             <a href="cadastroaprendizes.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Cadastro</a>
             <a href="cbos.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">CBO</a>
             <a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Empresas</a>
             <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
+            <a href="Contrato.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Contrato Modelo</a>
             <a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Ficha</a>
+            <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
             <a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px;">Sair</a>
         </div>
 
@@ -161,6 +162,8 @@ $candidates = $stmt->fetchAll();
   <div class="container mt-4" style="margin-left: 220px; width: calc(100% - 220px);">
     <h2>Cadastro de Candidatos</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#candidateModal" onclick="openModal()">Novo</button>
+    <button id="btnPesquisa" class="btn btn-secondary mb-3" type="button">Pesquisar Nome</button>
+    <input type="text" id="inputPesquisa" class="form-control mb-3" placeholder="Pesquisar por nome" style="display:none; max-width: 300px;" />
     <table class="table table-bordered">
         <thead>
             <tr class="text-center">
@@ -189,15 +192,7 @@ $candidates = $stmt->fetchAll();
     <!--<button class="btn btn-sm btn-info" onclick='viewCandidate(<?= json_encode($candidate) ?>)'>Visualizar</button></!-->
     <a href="cadastroaprendizes.php?delete=<?= $candidate['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
 
-    <div class="btn-group">
-      <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        Contrato
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="generate_contract.php?id=<?= $candidate['id'] ?>" target="_blank">Gerar Contrato</a></li>
-        <li><button class="dropdown-item" type="button" onclick="viewContractByCandidate(<?= $candidate['id'] ?>)">Visualizar Contrato</button></li>
-      </ul>
-    </div>
+    <a href="generate_contract.php?id=<?= $candidate['id'] ?>" target="_blank" class="btn btn-sm btn-primary">Gerar Contrato</a>
 </td>
             </tr>
             <?php endforeach; ?>
@@ -284,7 +279,8 @@ $candidates = $stmt->fetchAll();
             <label for="nescolaridade" class="form-label">Nível Escolaridade</label>
             <select class="form-select" name="nescolaridade" id="nescolaridade">
               <option value="Fundamental">Fundamental</option>
-              <option value="Médio">Médio</option>
+              <option value="Médio">Médio Incompleto</option>
+              <option value="Médio">Médio Completo</option>
             </select>
           </div>
           <div class="col">
@@ -300,11 +296,11 @@ $candidates = $stmt->fetchAll();
               <option value="Não" selected>Não</option>
             </select>
           </div>
-          <div class="col">
+          <!--<div class="col">
             <label for="escolaridade" class="form-label">Escolaridade</label>
             <input type="text" class="form-control" name="escolaridade" id="escolaridade" />
           </div>
-        </div>
+        </div><!-->
         <div class="row mb-3">
           <div class="col">
             <label for="jornada" class="form-label">Jornada</label>
@@ -332,11 +328,15 @@ $candidates = $stmt->fetchAll();
             <input type="date" class="form-control" name="dtcontratacao" id="dtcontratacao" />
           </div>
           <div class="col">
-            <label for="duracaodocurso" class="form-label">Duração do Curso</label>
+            <label for="dfcontratacao" class="form-label">Data de Encerramento</label>
+            <input type="date" class="form-control" name="dfcontratacao" id="dfcontratacao" />
+          </div>
+          <div class="col">
+            <label for="duracaodocurso" class="form-label">Duração do Contrato</label>
             <input type="text" class="form-control" name="duracaodocurso" id="duracaodocurso" />
           </div>
           <div class="col">
-            <label for="dtrabalho" class="form-label">Dia de Trabalho</label>
+            <label for="dtrabalho" class="form-label">Horário do Trabalho</label>
             <input type="text" class="form-control" name="dtrabalho" id="dtrabalho" />
           </div>
         </div>
@@ -352,7 +352,7 @@ $candidates = $stmt->fetchAll();
             </select>
           </div>
           <div class="col">
-            <label for="hrcurso" class="form-label">Hora do Curso</label>
+            <label for="hrcurso" class="form-label">Horário do Curso</label>
             <input type="text" class="form-control" name="hrcurso" id="hrcurso" />
           </div>
           <div class="col">
@@ -537,8 +537,8 @@ $candidates = $stmt->fetchAll();
             </select>
           </div>
           <div class="col">
-            <label for="escolaridade" class="form-label">Escolaridade</label>
-            <input type="text" class="form-control" name="escolaridade" id="escolaridade" />
+            <label for="dfcontratacao" class="form-label">Data de Encerramento</label>
+            <input type="text" class="form-control" name="dfcontratacao" id="dfcontratacao" />
           </div>
         </div>
         <div class="row mb-3">
@@ -586,7 +586,7 @@ $candidates = $stmt->fetchAll();
     document.getElementById('nescolaridade').value = candidate.nescolaridade || '';
     document.getElementById('escola').value = candidate.escola || '';
     document.getElementById('reservista').value = candidate.reservista || 'Não';
-    document.getElementById('escolaridade').value = candidate.escolaridade || '';
+    document.getElementById('dfcontratacao').value = candidate.dfcontratacao || '';
     document.getElementById('jornada').value = candidate.jornada || '';
     document.getElementById('hrtrabalho').value = candidate.hrtrabalho || '';
     document.getElementById('salario').value = candidate.salario || '';
@@ -622,7 +622,7 @@ $candidates = $stmt->fetchAll();
     document.getElementById('nescolaridade').value = candidate.nescolaridade || '';
     document.getElementById('escola').value = candidate.escola || '';
     document.getElementById('reservista').value = candidate.reservista || 'Não';
-    document.getElementById('escolaridade').value = candidate.escolaridade || '';
+    document.getElementById('dfcontratacao').value = candidate.dfcontratacao || '';
     document.getElementById('jornada').value = candidate.jornada || '';
     document.getElementById('hrtrabalho').value = candidate.hrtrabalho || '';
     document.getElementById('salario').value = candidate.salario || '';
@@ -706,6 +706,42 @@ function viewContractByCandidate(candidateId) {
         contractModal.show();
     })
     .catch(error => alert('Erro ao carregar contrato: ' + error.message));
+}
+</script>
+
+<script>
+document.getElementById('btnPesquisa').addEventListener('click', function() {
+    const input = document.getElementById('inputPesquisa');
+    if (input.style.display === 'none' || input.style.display === '') {
+        input.style.display = 'block';
+        input.focus();
+    } else {
+        input.style.display = 'none';
+        input.value = '';
+        filterTable('');
+    }
+});
+
+document.getElementById('inputPesquisa').addEventListener('input', function() {
+    filterTable(this.value);
+});
+
+function filterTable(searchTerm) {
+    const table = document.querySelector('table.table-bordered tbody');
+    const rows = table.getElementsByTagName('tr');
+    const filter = searchTerm.toLowerCase();
+
+    for (let i = 0; i < rows.length; i++) {
+        const nomeCell = rows[i].getElementsByTagName('td')[1]; // Nome column index is 1
+        if (nomeCell) {
+            const nomeText = nomeCell.textContent || nomeCell.innerText;
+            if (nomeText.toLowerCase().indexOf(filter) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
 }
 </script>
 

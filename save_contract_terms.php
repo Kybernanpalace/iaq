@@ -39,10 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($logoFilename) {
-        $sql = "INSERT INTO contratos (terms, logo) VALUES ('$terms', '$logoFilename')";
+    if (isset($_POST['save_terms'])) {
+        if ($logoFilename) {
+            $sql = "INSERT INTO contratos (terms, logo) VALUES ('$terms', '$logoFilename')";
+        } else {
+            $sql = "INSERT INTO contratos (terms) VALUES ('$terms')";
+        }
+    } elseif (isset($_POST['edit_terms'])) {
+        if ($logoFilename) {
+            $sql = "UPDATE contratos SET terms = '$terms', logo = '$logoFilename' WHERE id = 10";
+        } else {
+            $sql = "UPDATE contratos SET terms = '$terms' WHERE id = 10";
+        }
     } else {
-        $sql = "INSERT INTO contratos (terms) VALUES ('$terms')";
+        echo "Ação inválida.";
+        exit();
     }
 
     if ($conn->query($sql) === TRUE) {

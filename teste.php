@@ -41,14 +41,35 @@ if (!$candidate) {
     exit;
 }
 
-// Fetch contract terms - assuming contratos table with terms field
+// Fetch cadcbos data using candidate's cbo field
+$stmtCbos = $pdo->prepare("SELECT id, cod, atividades FROM cadcbos WHERE id = ?");
+$stmtCbos->execute([$candidate['cbo']]);
+$cbosData = $stmtCbos->fetch();
+
+if (!$cbosData) {
+    // If no matching cadcbos found, set empty defaults
+    $cbosData = ['id' => '', 'cod' => '', 'atividades' => ''];
+}
+
+// Fetch cadempresas data using candidate's empresa field
+$stmtEmpresa = $pdo->prepare("SELECT id, rsocial, cnpj, rempresa, cep, cidade, endereco, raprendiz, telefoneemp  FROM cadempresas WHERE id = ?");
+$stmtEmpresa->execute([$candidate['empresa']]);
+$empresaData = $stmtEmpresa->fetch();
+
+if (!$empresaData) {
+    $empresaData = ['id' => '', 'rsocial', 'cnpj', 'rempresa,', 'cep', 'cidade', 'endereco', 'raprendiz' => ''];
+}
+
+
 $stmtTerms = $pdo->query("SELECT terms FROM contratos LIMIT 1");
 $contractTermsRow = $stmtTerms->fetch();
 $contractTerms = $contractTermsRow ? $contractTermsRow['terms'] : '';
 
-// Generate contract content by combining candidate data and contract terms
-// For simplicity, we will replace placeholders in contract terms with candidate data if any placeholders exist
-// Example placeholders: {nome}, {cpf}, {cidade}, etc.
+//iddd verificar
+$stmtidcontrato = $pdo->prepare("SELECT id FROM saved_contracts WHERE candidate_id = ? ORDER BY id DESC LIMIT 1");
+$stmtidcontrato->execute([$id]);
+$idcontrato = $stmtidcontrato->fetch();
+
 
 
 function formatDate($dateStr) {
@@ -59,7 +80,26 @@ function formatDate($dateStr) {
     }
     return htmlspecialchars($dateStr);
 }
+
+function formatCNPJ($cnpj) {
+    $cnpj = preg_replace('/\D/', '', $cnpj);
+    if (strlen($cnpj) !== 14) {
+        return htmlspecialchars($cnpj);
+    }
+    return substr($cnpj, 0, 2) . '.' .
+           substr($cnpj, 2, 3) . '/' .
+           substr($cnpj, 5, 4) . '-' .
+           substr($cnpj, 9, 4);
+}
+
 $placeholders = [
+
+
+    //idcontrato verificar
+    '{idcontrato}' => htmlspecialchars($idcontrato ? $idcontrato['id'] : ''),
+
+
+    //Aprendiz
     '{nome}' => htmlspecialchars($candidate['nome']),
     '{pai}' => htmlspecialchars($candidate['pai']),
     '{mae}' => htmlspecialchars($candidate['mae']),
@@ -74,20 +114,55 @@ $placeholders = [
     '{cbo}' => htmlspecialchars($candidate['cbo']),
     '{hrtrabalho}' => htmlspecialchars($candidate['hrtrabalho']),
     '{salario}' => htmlspecialchars($candidate['salario']),
+    '{dfcontratacao}' => formatDate($candidate['dfcontratacao']),
     '{dtcontratacao}' => formatDate($candidate['dtcontratacao']),
+    '{dcurso}' => formatDate($candidate['dcurso']),
+    '{hrcurso}' => formatDate($candidate['hrcurso']),
+    '{dtcursoinicial}' => formatDate($candidate['dtcursoinicial']),
+    '{dtcursofinal}' => formatDate($candidate['dtcursofinal']),
+     '{jornada}' => htmlspecialchars($candidate['jornada']),
+    
 
-    // Add more placeholders as needed
+    //cbos
+    '{cbos_id}' => htmlspecialchars($cbosData['id']),
+    '{cbos_cod}' => htmlspecialchars($cbosData['cod']),
+    '{cbos_atividades}' => nl2br(htmlspecialchars($cbosData['atividades'])),
+
+    //empresa
+    '{empresa_id}' => htmlspecialchars($empresaData['id']),
+    '{empresa_rsocial}' => htmlspecialchars($empresaData['rsocial']),
+    '{empresa_cnpj}' => htmlspecialchars($empresaData['cnpj']),
+    '{empresa_endereco}' => htmlspecialchars($empresaData['endereco']),
+    '{empresa_cidade}' => htmlspecialchars($empresaData['cidade']),
+    '{empresa_cep}' => htmlspecialchars($empresaData['cep']),
+    '{empresa_rempresa}' => htmlspecialchars($empresaData['rempresa']),
+    '{empresa_raprendiz}' => htmlspecialchars($empresaData['raprendiz']),
+    '{empresa_telefoneemp}' => htmlspecialchars($empresaData['telefoneemp']),
+
+    
 ];
 
 $contractContent = strtr($contractTerms, $placeholders);
 
-// Handle saving contract if form submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contract'])) {
-    $stmtSave = $pdo->prepare("INSERT INTO saved_contracts (candidate_id, contract_content) VALUES (?, ?)");
-    $stmtSave->execute([$id, $contractContent]);
-    $savedMessage = "Contrato salvo com sucesso.";
-}
+    // Check if a contract already exists for this candidate
+    $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM saved_contracts WHERE candidate_id = ?");
+    $stmtCheck->execute([$id]);
+    $contractExists = $stmtCheck->fetchColumn() > 0;
 
+    if ($contractExists) {
+        //$savedMessage = "Erro: Já existe um contrato gerado para este CPF.";
+    } else {
+        if (isset($_POST['save_contract'])) {
+            // Save contract content to database without generating PDF
+            $stmtSave = $pdo->prepare("INSERT INTO saved_contracts (candidate_id, contract_content) VALUES (?, ?)");
+            $stmtSave->execute([$id, $contractContent]);
+            $_SESSION['savedMessage'] = "Contrato salvo com sucesso.";
+            header("Location: generate_contract.php?id=" . urlencode($id));
+            exit;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -130,13 +205,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contract'])) {
             margin-bottom: 20px;
             text-align: center;
         }
-        .contract {
-            border: 1px solid #000;
-            padding: 15px 20px;
-            line-height: 1.3;
-            font-size: 13px;
-            background-color: #f9f9f9;
-        }
+      
+       
         .contract h2 {
             text-align: center;
             text-decoration: underline;
@@ -154,7 +224,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contract'])) {
             color: #222;
         }
         .candidate-info p {
-            margin: 4px 0;
+            margin: 2px 0;
+            line-height: 1.2;
         }
         .signature-section {
             margin-top: 50px;
@@ -185,123 +256,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contract'])) {
         button:hover {
             background-color: #003060;
         }
+        @media print {
+            #contractForm {
+                display: none !important;
+            }
+        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <header>
-        <img src="https://via.placeholder.com/150x80?text=Company+Logo" alt="Company Logo" />
-        <h1>Empresa XYZ Ltda.</h1>
+    
+<?php
+    if (!empty($_SESSION['savedMessage'])) {
+        $savedMessage = $_SESSION['savedMessage'];
+        unset($_SESSION['savedMessage']);
+        echo "<script>alert(" . json_encode($savedMessage) . ");</script>";
+    }
+?>
+    <form method="post" id="contractForm" style="margin-top: 30px;">
+        <div style="display: flex; justify-content: center; gap: 15px;">
+            <button type="submit" name="save_contract">Salvar Contrato</button>
+            <button type="button" onclick="window.print()">Imprimir Contrato</button>
+            <button type="button" onclick="window.location.href='cadastroaprendizes.php'">Voltar</button>
+        </div>
+    </form>
+   
+            
+            
+            
+        <h2 style="text-align:center"><img src="iaq.png" alt="IAQ Logo" style="max-height: 80px; margin-bottom: 2px;" /></h2>
+        <h3 style="text-align:center"> <strong>CONTRATO DE APRENDIZAGEM</strong></h3>
+
         
-    </header>
-    <h2>Contrato de Aprendizagem</h2>
-    <?php if (!empty($savedMessage)): ?>
-        <div class="message"><?= $savedMessage ?></div>
-    <?php endif; ?>
-    <div class="contract">
-        
+      
+         <div class="contract">
+            <!-- cabeçalho com id e ano (ano está manual)</!-->
+        <div class="section contract-header" style="text-align:center;">
+            <p ><strong>Nº. Contrato:</strong> <?= htmlspecialchars($idcontrato ? $idcontrato['id'] : '') ?>/2025</p>
+        </div>
         <div class="section contract-terms">
-            <h3>Termos do Contrato</h3>
+            
             <p><?= nl2br(htmlspecialchars($contractContent)) ?></p>
+           
+            <p style="text-align:center; margin-bottom: 80px;">Brasília, <?= formatDate($candidate['dtcontratacao']) ?></p>
         </div>
         <div class="signature-section">
             <div class="signature-block">
-                <p>______________________________</p>
-                <p>Assinatura da Empresa</p>
+                Assinatura da Empresa
             </div>
             <div class="signature-block">
-                <p>______________________________</p>
-                <p>Assinatura do Candidato</p>
+                ______________________________<br>
+                Assinatura do Candidato
             </div>
         </div>
-        <div class="signature-section" style="margin-top: 30px;">
-            <div class="signature-block">
-                <p>______________________________</p>
-                <p>Adilson Mariz de Moraes - Presidente                
-                        IAQ - Instituto Aprender de Qualificação
-                    CNPJ: 12.388.176.0001-41 </p>
+        <div class="signature-section" style="margin-top: 40px; display: flex; justify-content: space-between;">
+            <div class="signature-block" style="width: 45%; text-align: center;">
+                ______________________________<br>
+                Adilson Mariz de Moraes - Presidente<br>
+                IAQ - Instituto Aprender de Qualificação<br>
+                CNPJ: 12.388.176.0001-41
             </div>
-            <div class="signature-block">
-                <p>______________________________</p>
-                <p>Responsável pelo aprendiz</p>
+            <div class="signature-block" style="width: 45%; text-align: center;">
+                ______________________________<br>
+                Responsável pelo aprendiz
             </div>
         </div>
-
-        <div class="signature-section" style="margin-top: 30px;">
-            <div class="signature-block">
-                <p>Nome:______________________________</p>
-                <p>CPF:______________________________</p>
-                <p>Assinatura:________________________</p> 
-                   
+        <div class="signature-section" style="margin-top: 40px; display: flex; justify-content: space-between;">
+            <div class="signature-block" style="width: 45%; text-align: left;">
+                Nome: ______________________________<br>
+                CPF: ______________________________<br>
+                Assinatura: ________________________
             </div>
-
-            <div class="signature-block">
-                <p>Nome:______________________________</p>
-                <p>CPF:______________________________</p>
-                <p>Assinatura:________________________</p> 
+            <div class="signature-block" style="width: 45%; text-align: left;">
+                Nome: ______________________________<br>
+                CPF: ______________________________<br>
+                Assinatura: ________________________
             </div>
+        </div>
     </div>
-    <form method="post" style="margin-top: 30px; text-align: center;">
-        <button type="submit" name="save_contract">Salvar Contrato</button>
-        <button type="button" onclick="window.location.href='teste.php'" style="margin-left: 15px;">Voltar</button>
-        <button type="button" id="printBtn" style="margin-left: 15px;">Imprimir</button>
-    </form>
-    <script>
-        document.getElementById('printBtn').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(10);
-            const contractElement = document.querySelector('.contract');
-            let y = 10;
-            const pageHeight = doc.internal.pageSize.height;
-            const leftMargin = 10;
-            const rightMargin = 190;
-            const lineHeight = 5;
-            const maxLineWidth = rightMargin - leftMargin;
-
-            function addText(text) {
-                const splitText = doc.splitTextToSize(text, maxLineWidth);
-                for (let i = 0; i < splitText.length; i++) {
-                    if (y + lineHeight > pageHeight - 10) {
-                        doc.addPage();
-                        y = 10;
-                    }
-                    doc.text(splitText[i], leftMargin, y);
-                    y += lineHeight;
-                }
-            }
-
-            // Add header
-            addText("Empresa XYZ Ltda.");
-            addText("CNPJ: 00.000.000/0001-00 | Rua Exemplo, 123 - Cidade - Estado | Telefone: (00) 0000-0000");
-            addText("");
-            addText("Contrato de Aprendizagem");
-            addText("");
-
-            // Add candidate info
-            addText("Dados do Candidato:");
-            addText("Nome: <?= htmlspecialchars($candidate['nome']) ?>");
-            addText("CPF: <?= htmlspecialchars($candidate['cpf']) ?>");
-            addText("Cidade: <?= htmlspecialchars($candidate['cidade']) ?>");
-            addText("Email: <?= htmlspecialchars($candidate['email']) ?>");
-            addText("Telefone: <?= htmlspecialchars($candidate['telefone']) ?>");
-            addText("");
-
-            // Add contract terms
-            addText("Termos do Contrato:");
-            addText(`<?= str_replace("\n", "\\n", addslashes($contractContent)) ?>`);
-            addText("");
-
-            // Add signature lines
-            addText("______________________________");
-            addText("Assinatura do Candidato");
-            addText("");
-            addText("______________________________");
-            addText("Assinatura da Empresa");
-            
-
-            doc.save('contrato.pdf');
-        });
-    </script>
 </body>
 </html>

@@ -3,6 +3,30 @@ session_start();
 if(empty($_SESSION)){
     print "<script>location.href='index.php';</script>";
 }
+
+$contractTerms = '';
+
+try {
+    $host = 'localhost';
+    $db   = 'sislogin';
+    $user = 'root';
+    $pass = '';
+    $charset = 'utf8mb4';
+
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    $pdo = new PDO($dsn, $user, $pass, $options);
+
+    $stmtTerms = $pdo->query("SELECT terms FROM contratos ORDER BY id DESC LIMIT 1");
+    $contractTermsRow = $stmtTerms->fetch();
+    $contractTerms = $contractTermsRow ? $contractTermsRow['terms'] : '';
+} catch (Exception $e) {
+    $contractTerms = '';
+}
 ?>
 
 <html lang="en">
@@ -15,14 +39,18 @@ if(empty($_SESSION)){
 </head>
 <body style="background-color:white;">
 
-    <div style="display: flex; min-height: 100vh;">
+   
+
+ <div style="display: flex; min-height: 100vh;">
         <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
             <a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Início</a>
             <a href="cadastroaprendizes.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Cadastro</a>
             <a href="cbos.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">CBO</a>
             <a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Empresas</a>
             <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
+            <a href="Contrato.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Contrato Modelo</a>
             <a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Ficha</a>
+            <a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none;">Usuários</a>
             <a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px;">Sair</a>
         </div>
 
@@ -36,13 +64,15 @@ if(empty($_SESSION)){
                 <?php endif; ?>
 <div class="mb-3">
     <label for="contractTerms" class="form-label">Termos do Contrato</label>
-    <textarea id="contractTerms" name="contractTerms" class="form-control" rows="10" placeholder="Digite os termos do contrato aqui. Use placeholders para dados do candidato, ex: {nome}, {cargo}, {data_inicio}"></textarea>
+    <textarea id="contractTerms" name="contractTerms" class="form-control" rows="10" placeholder="Digite os termos do contrato aqui. Use placeholders para dados do candidato, ex: {nome}, {cargo}, {data_inicio}"><?= htmlspecialchars($contractTerms) ?></textarea>
 </div>
-<div class="mb-3">
+<!--<button type="submit" name="save_terms" class="btn btn-primary">Salvar</button></!-->
+<button type="submit" name="edit_terms" class="btn btn-secondary ms-2">Editar</button>
+<!--<div class="mb-3">
     <label for="companyLogo" class="form-label">Logo da Empresa</label>
-    <input type="file" id="companyLogo" name="companyLogo" class="form-control" accept="image/*" />
+    <input type="file" id="companyLogo" name="companyLogo" class="form-control" accept="image/*"<!-->
 </div>
-<button type="submit" class="btn btn-primary">Salvar Termos</button>
+
             </form>
         </div>
     </div>
