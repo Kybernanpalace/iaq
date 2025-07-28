@@ -9,7 +9,7 @@ require_once 'vendor/autoload.php'; // Dompdf autoload
 
 use Dompdf\Dompdf;
 
-// Database connection
+// banco
 $host = 'localhost';
 $db   = 'sislogin';
 $user = 'root';
@@ -28,13 +28,13 @@ try {
      die("Erro na conexão com o banco de dados: " . $e->getMessage());
 }
 
-// Get candidate id
+//  id do candidato
 $id = $_GET['id'] ?? null;
 if (!$id) {
     die("ID do candidato não fornecido.");
 }
 
-// Fetch contract text
+// Texto do contrato
 $stmt = $pdo->prepare("SELECT contrato, nome FROM cadcandidato WHERE id = ?");
 $stmt->execute([$id]);
 $row = $stmt->fetch();

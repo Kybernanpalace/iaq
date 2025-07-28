@@ -65,7 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch records
-$result = $conn->query("SELECT * FROM cadempresas");
+$searchQuery = '';
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $searchQuery = $conn->real_escape_string(trim($_GET['search']));
+    $sql = "SELECT * FROM cadempresas WHERE cnpj LIKE '%$searchQuery%' OR rsocial LIKE '%$searchQuery%' OR nfantasia LIKE '%$searchQuery%'";
+    $result = $conn->query($sql);
+} else {
+    $result = $conn->query("SELECT * FROM cadempresas");
+}
 
 ?>
 
@@ -291,6 +298,15 @@ $result = $conn->query("SELECT * FROM cadempresas");
             // Show submit button
             document.querySelector('#recordForm button[type="submit"]').style.display = 'inline-block';
         }
+        function pesquisar() {
+            var form = document.getElementById('searchForm');
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'inline-block';
+                document.getElementById('searchInput').focus();
+            } else {
+                form.style.display = 'none';
+            }
+        }
     </script>
 </head>
 <body>
@@ -310,6 +326,11 @@ $result = $conn->query("SELECT * FROM cadempresas");
     <div id="main-container">
     <h1>Cadastro de Empresas</h1>
     <button class="novo-btn" onclick="openForm()">Novo</button>
+    <button class="novo-btn" id="btnPesquisar">Pesquisar</button>
+
+    <div style="margin-left: 5px; width: calc(100% - 160px); margin-top: 10px;">
+        <input type="text" id="inputPesquisar" placeholder="Pesquisar por nome ou CNPJ" style="display:none; padding: 6px; border-radius: 4px; border: 1px solid #ccc; max-width: 300px; width: 100%;" />
+    </div>
 
     <table>
             <thead>
@@ -337,6 +358,44 @@ $result = $conn->query("SELECT * FROM cadempresas");
                 <?php endif; ?>
             </tbody>
         </table>
+
+<script>
+document.getElementById('btnPesquisar').addEventListener('click', function() {
+    const input = document.getElementById('inputPesquisar');
+    if (input.style.display === 'none' || input.style.display === '') {
+        input.style.display = 'inline-block';
+        input.focus();
+    } else {
+        input.style.display = 'none';
+        input.value = '';
+        filterTable('');
+    }
+});
+
+document.getElementById('inputPesquisar').addEventListener('input', function() {
+    filterTable(this.value);
+});
+
+function filterTable(searchTerm) {
+    const table = document.querySelector('table tbody');
+    const rows = table.getElementsByTagName('tr');
+    const filter = searchTerm.toLowerCase();
+
+    for (let i = 0; i < rows.length; i++) {
+        const cnpjCell = rows[i].getElementsByTagName('td')[0]; // CNPJ column index is 0
+        const rsocialCell = rows[i].getElementsByTagName('td')[1]; // Razão Social column index is 1
+        if (cnpjCell && rsocialCell) {
+            const cnpjText = cnpjCell.textContent || cnpjCell.innerText;
+            const rsocialText = rsocialCell.textContent || rsocialCell.innerText;
+            if (cnpjText.toLowerCase().indexOf(filter) > -1 || rsocialText.toLowerCase().indexOf(filter) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+}
+</script>
 
         <div id="popupOverlay" onclick="closeForm()"></div>
         <div id="popupForm">

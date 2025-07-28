@@ -107,7 +107,7 @@ body {
 
         <div style="flex-grow: 1; padding: 20px;">
             <h3>Inclua seu projeto aqui</h3>
-            <p>Em contrução.</p>
+            <p>Em construção.</p>
         </div>
     </div>
 

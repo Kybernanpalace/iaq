@@ -5,7 +5,7 @@ if(empty($_SESSION)){
     exit;
 }
 
-// Database connection
+// banco
 $host = 'localhost';
 $db   = 'sislogin';
 $user = 'root';
@@ -24,15 +24,15 @@ try {
      throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-// Fetch cadcbos for cbo select
+// Select CBO
 $stmtCbos = $pdo->query("SELECT id, cod, atividades FROM cadcbos ORDER BY cod");
 $cadcbos = $stmtCbos->fetchAll();
 
-// Fetch cadempresas for empresa select
+// Select Empresas
 $stmtEmpresas = $pdo->query("SELECT id, rsocial FROM cadempresas ORDER BY rsocial");
 $cadempresas = $stmtEmpresas->fetchAll();
 
-// Handle form submissions for create and update
+// Update
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $_POST['id'] ?? null;
         $nome = $_POST['nome'] ?? '';
@@ -65,7 +65,7 @@ $cadempresas = $stmtEmpresas->fetchAll();
         $cbo = $_POST['cbo'] ?? null;
         $empresa = $_POST['empresa'] ?? null;
 
-        // Validate cbo and empresa to allow null or empty string
+        // Validação  CBO
         if ($cbo === '') {
             $cbo = null;
         }
@@ -73,7 +73,7 @@ $cadempresas = $stmtEmpresas->fetchAll();
             $empresa = null;
         }
 
-        // Handle photo upload
+        // Upload Foto
         $foto = null;
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = 'uploads/';
@@ -92,7 +92,7 @@ $cadempresas = $stmtEmpresas->fetchAll();
         }
 
         if ($id) {
-            // Update existing record
+            // Update  record
             if ($foto) {
                 $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
                 $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
@@ -109,7 +109,7 @@ $cadempresas = $stmtEmpresas->fetchAll();
         exit;
     }
 
-// Handle delete
+//  delete
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $stmt = $pdo->prepare("DELETE FROM cadcandidato WHERE id = ?");
@@ -118,7 +118,7 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Fetch all candidates with full fields for editing
+// Edição da ficha de cadastro
 $stmt = $pdo->query("SELECT * FROM cadcandidato ORDER BY id DESC");
 $candidates = $stmt->fetchAll();
 
@@ -313,8 +313,9 @@ $candidates = $stmt->fetchAll();
             <label for="hrtrabalho" class="form-label">Horas de Trabalho</label>
             <select class="form-select" name="hrtrabalho" id="hrtrabalho">
               <option value="4 horas">4 horas</option>
+              <option value="5 Horas">4 horas</option>
               <option value="6 horas">6 horas</option>
-              <option value="6 horas">8 horas</option>
+              <option value="8 horas">8 horas</option>
             </select>
           </div>
           <div class="col">
@@ -636,7 +637,7 @@ $candidates = $stmt->fetchAll();
     document.getElementById('cbo').value = candidate.cbo || '';
     document.getElementById('empresa').value = candidate.empresa || '';
 
-    // Show photo if available
+    // Foto Candidato
     const photoImg = document.getElementById('candidatePhoto');
     if (candidate.foto) {
       photoImg.src = 'uploads/' + candidate.foto;
@@ -651,7 +652,7 @@ $candidates = $stmt->fetchAll();
     // Change modal title
     document.getElementById('candidateModalLabel').textContent = 'Visualizar Candidato';
 
-    // Add a close button if not present
+    
     if (!document.getElementById('closeViewBtn')) {
       const closeBtn = document.createElement('button');
       closeBtn.type = 'button';

@@ -92,54 +92,65 @@ function formatCNPJ($cnpj) {
            substr($cnpj, 9, 4);
 }
 
-$placeholders = [
+$contabilizar = 0;
+$jornada = $candidate['jornada'] ?? '';
+$hrtrabalho = floatval($candidate['hrtrabalho'] ?? 0);
+
+if ($jornada === 'Segunda a Sexta') {
+    $contabilizar = 5 * $hrtrabalho;
+} elseif ($jornada === 'Segunda a Sábado') {
+    $contabilizar = 6 * $hrtrabalho;
+}
+
+    $placeholders = [
 
 
     //idcontrato verificar
-    '{idcontrato}' => htmlspecialchars($idcontrato ? $idcontrato['id'] : ''),
+    '{idcontrato}' => '<strong>' . htmlspecialchars($idcontrato ? $idcontrato['id'] : '') . '</strong>',
 
 
     //Aprendiz
-    '{nome}' => htmlspecialchars($candidate['nome']),
-    '{pai}' => htmlspecialchars($candidate['pai']),
-    '{mae}' => htmlspecialchars($candidate['mae']),
-    '{nascimento}' => formatDate($candidate['nascimento']),
-    '{telefone}' => htmlspecialchars($candidate['telefone']),
-    '{cpf}' => htmlspecialchars($candidate['cpf']),
-    '{cep}' => htmlspecialchars($candidate['cep']),
-    '{cidade}' => htmlspecialchars($candidate['cidade']),
-    '{endereco}' => htmlspecialchars($candidate['endereco']),
-    '{nctps}' => htmlspecialchars($candidate['nctps']),
-    '{sctps}' => htmlspecialchars($candidate['sctps']),
-    '{cbo}' => htmlspecialchars($candidate['cbo']),
-    '{hrtrabalho}' => htmlspecialchars($candidate['hrtrabalho']),
-    '{salario}' => htmlspecialchars($candidate['salario']),
-    '{dfcontratacao}' => formatDate($candidate['dfcontratacao']),
-    '{dtcontratacao}' => formatDate($candidate['dtcontratacao']),
-    '{dcurso}' => formatDate($candidate['dcurso']),
-    '{hrcurso}' => formatDate($candidate['hrcurso']),
-    '{dtcursoinicial}' => formatDate($candidate['dtcursoinicial']),
-    '{dtcursofinal}' => formatDate($candidate['dtcursofinal']),
-     '{jornada}' => htmlspecialchars($candidate['jornada']),
-    
+    '{nome}' => '<strong>' . htmlspecialchars($candidate['nome']) . '</strong>',
+    '{pai}' => '<strong>' . htmlspecialchars($candidate['pai']) . '</strong>',
+    '{mae}' => '<strong>' . htmlspecialchars($candidate['mae']) . '</strong>',
+    '{nascimento}' => '<strong>' . formatDate($candidate['nascimento']) . '</strong>',
+    '{telefone}' => '<strong>' . htmlspecialchars($candidate['telefone']) . '</strong>',
+    '{cpf}' => '<strong>' . htmlspecialchars($candidate['cpf']) . '</strong>',
+    '{cep}' => '<strong>' . htmlspecialchars($candidate['cep']) . '</strong>',
+    '{cidade}' => '<strong>' . htmlspecialchars($candidate['cidade']) . '</strong>',
+    '{endereco}' => '<strong>' . htmlspecialchars($candidate['endereco']) . '</strong>',
+    '{nctps}' => '<strong>' . htmlspecialchars($candidate['nctps']) . '</strong>',
+    '{sctps}' => '<strong>' . htmlspecialchars($candidate['sctps']) . '</strong>',
+    '{cbo}' => '<strong>' . htmlspecialchars($candidate['cbo']) . '</strong>',
+    '{hrtrabalho}' => '<strong>' . htmlspecialchars($candidate['hrtrabalho']) . '</strong>',
+    '{salario}' => '<strong>' . htmlspecialchars($candidate['salario']) . '</strong>',
+    '{dfcontratacao}' => '<strong>' . formatDate($candidate['dfcontratacao']) . '</strong>',
+    '{dtcontratacao}' => '<strong>' . formatDate($candidate['dtcontratacao']) . '</strong>',
+    '{dcurso}' => '<strong>' . formatDate($candidate['dcurso']) . '</strong>',
+    '{hrcurso}' => '<strong>' . formatDate($candidate['hrcurso']) . '</strong>',
+    '{dtcursoinicial}' => '<strong>' . formatDate($candidate['dtcursoinicial']) . '</strong>',
+    '{dtcursofinal}' => '<strong>' . formatDate($candidate['dtcursofinal']) . '</strong>',
+     '{jornada}' => '<strong>' . htmlspecialchars($candidate['jornada']) . '</strong>',
+     '{contabilizar}' => '<strong>' . htmlspecialchars($contabilizar) . '</strong>',
+
 
     //cbos
-    '{cbos_id}' => htmlspecialchars($cbosData['id']),
-    '{cbos_cod}' => htmlspecialchars($cbosData['cod']),
-    '{cbos_atividades}' => nl2br(htmlspecialchars($cbosData['atividades'])),
+    '{cbos_id}' => '<strong>' . htmlspecialchars($cbosData['id']) . '</strong>',
+    '{cbos_cod}' => '<strong>' . htmlspecialchars($cbosData['cod']) . '</strong>',
+    '{cbos_atividades}' => nl2br('<strong>' . htmlspecialchars($cbosData['atividades']) . '</strong>'),
 
     //empresa
-    '{empresa_id}' => htmlspecialchars($empresaData['id']),
-    '{empresa_rsocial}' => htmlspecialchars($empresaData['rsocial']),
-    '{empresa_cnpj}' => htmlspecialchars($empresaData['cnpj']),
-    '{empresa_endereco}' => htmlspecialchars($empresaData['endereco']),
-    '{empresa_cidade}' => htmlspecialchars($empresaData['cidade']),
-    '{empresa_cep}' => htmlspecialchars($empresaData['cep']),
-    '{empresa_rempresa}' => htmlspecialchars($empresaData['rempresa']),
-    '{empresa_raprendiz}' => htmlspecialchars($empresaData['raprendiz']),
-    '{empresa_telefoneemp}' => htmlspecialchars($empresaData['telefoneemp']),
+    '{empresa_id}' => '<strong>' . htmlspecialchars($empresaData['id']) . '</strong>',
+    '{empresa_rsocial}' => '<strong>' . htmlspecialchars($empresaData['rsocial']) . '</strong>',
+    '{empresa_cnpj}' => '<strong>' . htmlspecialchars($empresaData['cnpj']) . '</strong>',
+    '{empresa_endereco}' => '<strong>' . htmlspecialchars($empresaData['endereco']) . '</strong>',
+    '{empresa_cidade}' => '<strong>' . htmlspecialchars($empresaData['cidade']) . '</strong>',
+    '{empresa_cep}' => '<strong>' . htmlspecialchars($empresaData['cep']) . '</strong>',
+    '{empresa_rempresa}' => '<strong>' . htmlspecialchars($empresaData['rempresa']) . '</strong>',
+    '{empresa_raprendiz}' => '<strong>' . htmlspecialchars($empresaData['raprendiz']) . '</strong>',
+    '{empresa_telefoneemp}' => '<strong>' . htmlspecialchars($empresaData['telefoneemp']) . '</strong>',
 
-    
+
 ];
 
 $contractContent = strtr($contractTerms, $placeholders);
@@ -212,6 +223,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contract'])) {
             text-decoration: underline;
             margin-bottom: 20px;
             font-size: 20px;
+        }
+        
+        .contract-terms p {
+            font-size: 13px;
         }
         .section {
             margin-bottom: 25px;
@@ -295,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contract'])) {
         </div>
         <div class="section contract-terms">
             
-            <p><?= nl2br(htmlspecialchars($contractContent)) ?></p>
+            <p><?= nl2br($contractContent) ?></p>
            
             <p style="text-align:center">Brasília, <?= formatDate($candidate['dtcontratacao']) ?></p>
         </div>
