@@ -1,27 +1,28 @@
-
 <?php
     session_start();
     if(empty($_SESSION)){
-        print "<script>location.href='index.php;</script>";
+        print "<script>location.href='index.php';</script>";
     }
 
-    ?>
+    include 'config.php';
+
+    // Query to get all users
+    $sql = "SELECT * FROM usuarios";
+    $result = $conn->query($sql);
+?>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Visualizar Usuários</title>
     
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 
-
     </head>
    
-    
-
-
-       <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 body {
@@ -91,8 +92,6 @@ body {
 </head>
 <body style="background-color:white;">
 
-
-
    <div style="display: flex; min-height: 100vh;">
         <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
 <a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Início</a>
@@ -101,22 +100,48 @@ body {
 <a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Empresas</a>
 <!--<a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Usuários</a></!-->
 <a href="Contrato.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Contrato Modelo</a>
-<!--<a href="usuario.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Cad. Usuários Sistema</a></!-->
-<!--<a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Ficha de Observação</a></!-->
+<!--<a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Ficha</a></!-->
 <a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px; font-size: 14px; letter-spacing: 0.05em;">Sair</a>
         </div>
 
-        <div style="flex-grow: 1; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh;">
-            <?php
-                if (isset($_SESSION['nome']) && !empty($_SESSION['nome'])) {
-                    echo "<h3>Olá, " . htmlspecialchars($_SESSION['nome']) . "!</h3>";
-                } else {
-                    echo "<h3>Olá!</h3>";
-                }
-            ?>
+        <div style="flex-grow: 1; padding: 20px;">
+            <h2>Usuários Cadastrados</h2>
+            <a href="novo_usuario.php" class="btn btn-primary mb-3">Novo</a>
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Usuário</th>
+                        <th>Senha</th>
+                        <th>tipo</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if ($result && $result->num_rows > 0) {
+                        while($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['id']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['usuario']) . "</td>";  
+                            echo "<td>" . htmlspecialchars($row['senha']) . "</td>";
+                            echo "<td>". htmlspecialchars($row["tipo"]) . "</td>";
+                            echo "<td>";
+                            echo "<a href='editar_usuario.php?id=" . urlencode($row['id']) . "' class='btn btn-sm btn-primary me-2'>Editar</a>";
+                            echo "<a href='excluir_usuario.php?id=" . urlencode($row['id']) . "' class='btn btn-sm btn-danger' onclick=\"return confirm('Tem certeza que deseja excluir este usuário?');\">Excluir</a>";
+                            echo "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='4'>Nenhum usuário encontrado.</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
 </body>
 </html>
-

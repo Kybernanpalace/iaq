@@ -26,9 +26,17 @@ if($qtd > 0){
     $_SESSION["usuario"] = $usuario;
     $_SESSION["nome"] = $row->nome;
     $_SESSION["tipo"] = $row->tipo;
-    print "<script>location.href='dashboard.php';</script>";
+
+    if($row->tipo === 'FULL'){
+        print "<script>location.href='FULL.php';</script>";
+    } elseif($row->tipo === 'Professores'){
+        print "<script>location.href='professores.php';</script>";
+    } else {
+        
+        print "<script>location.href='dashboard.php';</script>";
+    }
 
 }else{
-    print "<script>alert('Usuário e/ou Senha inválida);</script>";
+    print "<script>alert('Usuário e/ou Senha inválida');</script>";
     print "<script>location.href='index.php';</script>";
 }
