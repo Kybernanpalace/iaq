@@ -28,9 +28,9 @@ if($qtd > 0){
     $_SESSION["tipo"] = $row->tipo;
 
     if($row->tipo === 'FULL'){
-        print "<script>location.href='FULL.php';</script>";
+        print "<script>location.href='dashboard.php';</script>";
     } elseif($row->tipo === 'Professores'){
-        print "<script>location.href='professores.php';</script>";
+        print "<script>location.href='dashboard.php';</script>";
     } else {
         
         print "<script>location.href='dashboard.php';</script>";
