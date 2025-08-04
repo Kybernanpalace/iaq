@@ -346,10 +346,10 @@ if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
                         <tr>
                             <td><?php echo htmlspecialchars($row['cnpj']); ?></td>
                             <td><?php echo htmlspecialchars($row['rsocial']); ?></td>
-                            <td>
-                                <button class="delete-btn" onclick="if(confirm('Confirma exclusão?')) location.href='empresas.php?delete_id=<?php echo $row['id']; ?>'">Excluir</button>
-                                <button class="view-btn" onclick="viewRecord(<?php echo $row['id']; ?>)">Visualizar</button>
-                                <button class="edit-btn" onclick="editRecord(<?php echo htmlspecialchars(json_encode($row)); ?>)">Alterar</button>
+                            <td style="white-space: nowrap;">
+                                <!--<button class="view-btn" onclick="viewRecord(<?php echo $row['id']; ?>)" style="display: inline-block; margin-right: 5px;" title="Visualizar">Visualizar</button><!-->
+                                <button class="edit-btn" onclick="editRecord(<?php echo htmlspecialchars(json_encode($row)); ?>)" style="display: inline-block; margin-right: 5px;" title="Editar">Editar</button>
+                                <button class="delete-btn" onclick="if(confirm('Confirma exclusão?')) location.href='empresas.php?delete_id=<?php echo $row['id']; ?>'" style="display: inline-block;" title="Excluir">Excluir</button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
