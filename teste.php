@@ -40,6 +40,7 @@ $cadempresas = $stmtEmpresas->fetchAll();
         $pai = $_POST['pai'] ?? '';
         $nascimento = $_POST['nascimento'] ?? null;
         $telefone = $_POST['telefone'] ?? '';
+        $telefone2= $_POST['telefone2'] ??'';
         $sexo = $_POST['sexo'] ?? 'Não informar';
         $email = $_POST['email'] ?? '';
         $cpf = $_POST['cpf'] ?? '';
@@ -94,16 +95,16 @@ $cadempresas = $stmtEmpresas->fetchAll();
         if ($id) {
             // Update  record
             if ($foto) {
-                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
-                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
+                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?,telefone2=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
+                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $telefone2, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
             } else {
-                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, cbo=?, empresa=? WHERE id=?");
-                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa, $id]);
+                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, telefone2=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, cbo=?, empresa=? WHERE id=?");
+                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $telefone2, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa, $id]);
             }
         } else {
             // Insert new record
-            $stmt = $pdo->prepare("INSERT INTO cadcandidato (nome, mae, pai, nascimento, telefone, sexo, email, cpf, cep, cidade, endereco, nctps, sctps, nescolaridade, escola, reservista, dfcontratacao, jornada, hrtrabalho, salario, dtcontratacao, duracaodocurso, dtrabalho, dcurso, hrcurso, dtcursoinicial, dtcursofinal, cbo, empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa]);
+            $stmt = $pdo->prepare("INSERT INTO cadcandidato (nome, mae, pai, nascimento, telefone, telefone2=?, sexo, email, cpf, cep, cidade, endereco, nctps, sctps, nescolaridade, escola, reservista, dfcontratacao, jornada, hrtrabalho, salario, dtcontratacao, duracaodocurso, dtrabalho, dcurso, hrcurso, dtcursoinicial, dtcursofinal, cbo, empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $telefone2, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa]);
         }
         header("Location: cadastroaprendizes.php");
         exit;
@@ -119,7 +120,7 @@ if (isset($_GET['delete'])) {
 }
 
 // Pagination logic
-$records_per_page = 2;
+$records_per_page = 
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $current_page = max($current_page, 1); // Ensure page is at least 1
 
@@ -303,6 +304,10 @@ foreach ($cadempresas as $empresa) {
           <div class="col">
             <label for="telefone" class="form-label">Telefone</label>
             <input type="tel" class="form-control" name="telefone" id="telefone" />
+          </div>
+          <div class="col">
+            <label for="telefone2" class="form-label">Telefone 2</label>
+            <input type="tel" class="form-control" name="telefone2" id="telefone2" />
           </div>
           <div class="col">
             <label for="sexo" class="form-label">Sexo</label>
@@ -547,6 +552,10 @@ foreach ($cadempresas as $empresa) {
             <input type="tel" class="form-control" name="telefone" id="telefone" />
           </div>
           <div class="col">
+            <label for="telefone2" class="form-label">Telefone 2</label>
+            <input type="tel" class="form-control" name="telefone2" id="telefone2" />
+          </div>
+          <div class="col">
             <label for="sexo" class="form-label">Sexo</label>
             <select class="form-select" name="sexo" id="sexo">
               <option value="Masculino">Masculino</option>
@@ -647,6 +656,7 @@ foreach ($cadempresas as $empresa) {
     document.getElementById('pai').value = candidate.pai || '';
     document.getElementById('nascimento').value = candidate.nascimento || '';
     document.getElementById('telefone').value = candidate.telefone || '';
+    document.getElementById('telefone2').value = candidate.telefone2 || '';
     document.getElementById('sexo').value = candidate.sexo || 'Não informar';
     document.getElementById('email').value = candidate.email || '';
     document.getElementById('cpf').value = candidate.cpf || '';
