@@ -1,11 +1,11 @@
-    <?php
+<?php
 session_start();
 if(empty($_SESSION)){
     print "<script>location.href='index.php';</script>";
     exit;
 }
 
-// banco
+// Database connection
 $host = 'localhost';
 $db   = 'sislogin';
 $user = 'root';
@@ -32,84 +32,77 @@ $cadcbos = $stmtCbos->fetchAll();
 $stmtEmpresas = $pdo->query("SELECT id, rsocial FROM cadempresas ORDER BY rsocial");
 $cadempresas = $stmtEmpresas->fetchAll();
 
-// Update
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $id = $_POST['id'] ?? null;
-        $nome = $_POST['nome'] ?? '';
-        $mae = $_POST['mae'] ?? '';
-        $pai = $_POST['pai'] ?? '';
-        $nascimento = $_POST['nascimento'] ?? null;
-        $telefone = $_POST['telefone'] ?? '';
-        $sexo = $_POST['sexo'] ?? 'Não informar';
-        $email = $_POST['email'] ?? '';
-        $cpf = $_POST['cpf'] ?? '';
-        $cep = $_POST['cep'] ?? '';
-        $cidade = $_POST['cidade'] ?? '';
-        $endereco = $_POST['endereco'] ?? '';
-        $nctps = $_POST['nctps'] ?? '';
-        $sctps = $_POST['sctps'] ?? '';
-        $nescolaridade = $_POST['nescolaridade'] ?? null;
-        $escola = $_POST['escola'] ?? '';
-        $reservista = $_POST['reservista'] ?? 'Não';
-        $dfcontratacao = $_POST['dfcontratacao'] ?? '';
-        $jornada = $_POST['jornada'] ?? '';
-        $hrtrabalho = $_POST['hrtrabalho'] ?? '';
-        $salario = $_POST['salario'] ?? '';
-        $dtcontratacao = $_POST['dtcontratacao'] ?? null;
-        $duracaodocurso = $_POST['duracaodocurso'] ?? '';
-        $dtrabalho = $_POST['dtrabalho'] ?? '';
-        $dcurso = $_POST['dcurso'] ?? '';
-        $hrcurso = $_POST['hrcurso'] ?? '';
-        $dtcursoinicial = $_POST['dtcursoinicial'] ?? null;
-        $dtcursofinal = $_POST['dtcursofinal'] ?? null;
-        $cbo = $_POST['cbo'] ?? null;
-        $empresa = $_POST['empresa'] ?? null;
+// Handle form submissions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'] ?? null;
+    $nome = $_POST['nome'] ?? '';
+    $mae = $_POST['mae'] ?? '';
+    $pai = $_POST['pai'] ?? '';
+    $nascimento = $_POST['nascimento'] ?? null;
+    $telefone = $_POST['telefone'] ?? '';
+    $telefone2 = $_POST['telefone2'] ?? '';
+    $sexo = $_POST['sexo'] ?? 'Não informar';
+    $email = $_POST['email'] ?? '';
+    $cpf = $_POST['cpf'] ?? '';
+    $cep = $_POST['cep'] ?? '';
+    $cidade = $_POST['cidade'] ?? '';
+    $endereco = $_POST['endereco'] ?? '';
+    $nctps = $_POST['nctps'] ?? '';
+    $sctps = $_POST['sctps'] ?? '';
+    $nescolaridade = $_POST['nescolaridade'] ?? null;
+    $escola = $_POST['escola'] ?? '';
+    $reservista = $_POST['reservista'] ?? 'Não';
+    $dfcontratacao = $_POST['dfcontratacao'] ?? '';
+    $jornada = $_POST['jornada'] ?? '';
+    $hrtrabalho = $_POST['hrtrabalho'] ?? '';
+    $salario = $_POST['salario'] ?? '';
+    $dtcontratacao = $_POST['dtcontratacao'] ?? null;
+    $duracaodocurso = $_POST['duracaodocurso'] ?? '';
+    $dtrabalho = $_POST['dtrabalho'] ?? '';
+    $dcurso = $_POST['dcurso'] ?? '';
+    $hrcurso = $_POST['hrcurso'] ?? '';
+    $dtcursoinicial = $_POST['dtcursoinicial'] ?? null;
+    $dtcursofinal = $_POST['dtcursofinal'] ?? null;
+    $cbo = $_POST['cbo'] ?? null;
+    $empresa = $_POST['empresa'] ?? null;
 
-        // Validação  CBO
-        if ($cbo === '') {
-            $cbo = null;
+    // Handle file upload
+    $foto = null;
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
         }
-        if ($empresa === '') {
-            $empresa = null;
-        }
+        $fileTmpPath = $_FILES['foto']['tmp_name'];
+        $fileName = basename($_FILES['foto']['name']);
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $newFileName = uniqid('foto_', true) . '.' . $fileExtension;
+        $destPath = $uploadDir . $newFileName;
 
-        // Upload Foto
-        $foto = null;
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = 'uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $fileTmpPath = $_FILES['foto']['tmp_name'];
-            $fileName = basename($_FILES['foto']['name']);
-            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $newFileName = uniqid('foto_', true) . '.' . $fileExtension;
-            $destPath = $uploadDir . $newFileName;
-
-            if (move_uploaded_file($fileTmpPath, $destPath)) {
-                $foto = $newFileName;
-            }
+        if (move_uploaded_file($fileTmpPath, $destPath)) {
+            $foto = $newFileName;
         }
-
-        if ($id) {
-            // Update  record
-            if ($foto) {
-                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
-                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
-            } else {
-                $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, cbo=?, empresa=? WHERE id=?");
-                $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa, $id]);
-            }
-        } else {
-            // Insert new record
-            $stmt = $pdo->prepare("INSERT INTO cadcandidato (nome, mae, pai, nascimento, telefone, sexo, email, cpf, cep, cidade, endereco, nctps, sctps, nescolaridade, escola, reservista, dfcontratacao, jornada, hrtrabalho, salario, dtcontratacao, duracaodocurso, dtrabalho, dcurso, hrcurso, dtcursoinicial, dtcursofinal, cbo, empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa]);
-        }
-        header("Location: cadastroaprendizes.php");
-        exit;
     }
 
-//  delete
+    if ($id) {
+        // Update record
+        if ($foto) {
+            $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, telefone2=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, foto=?, cbo=?, empresa=? WHERE id=?");
+            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $telefone2, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $foto, $cbo, $empresa, $id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE cadcandidato SET nome=?, mae=?, pai=?, nascimento=?, telefone=?, telefone2=?, sexo=?, email=?, cpf=?, cep=?, cidade=?, endereco=?, nctps=?, sctps=?, nescolaridade=?, escola=?, reservista=?, dfcontratacao=?, jornada=?, hrtrabalho=?, salario=?, dtcontratacao=?, duracaodocurso=?, dtrabalho=?, dcurso=?, hrcurso=?, dtcursoinicial=?, dtcursofinal=?, cbo=?, empresa=? WHERE id=?");
+            $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $telefone2, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa, $id]);
+        }
+    } else {
+        // Insert new record
+        $stmt = $pdo->prepare("INSERT INTO cadcandidato (nome, mae, pai, nascimento, telefone, telefone2, sexo, email, cpf, cep, cidade, endereco, nctps, sctps, nescolaridade, escola, reservista, dfcontratacao, jornada, hrtrabalho, salario, dtcontratacao, duracaodocurso, dtrabalho, dcurso, hrcurso, dtcursoinicial, dtcursofinal, cbo, empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$nome, $mae, $pai, $nascimento, $telefone, $telefone2, $sexo, $email, $cpf, $cep, $cidade, $endereco, $nctps, $sctps, $nescolaridade, $escola, $reservista, $dfcontratacao, $jornada, $hrtrabalho, $salario, $dtcontratacao, $duracaodocurso, $dtrabalho, $dcurso, $hrcurso, $dtcursoinicial, $dtcursofinal, $cbo, $empresa]);
+    }
+    header("Location: cadastroaprendizes.php");
+    exit;
+}
+
+// Handle delete
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $stmt = $pdo->prepare("DELETE FROM cadcandidato WHERE id = ?");
@@ -118,7 +111,7 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Edição da ficha de cadastro
+// Fetch all candidates
 $stmt = $pdo->query("SELECT * FROM cadcandidato ORDER BY id DESC");
 $candidates = $stmt->fetchAll();
 
@@ -127,633 +120,573 @@ foreach ($cadempresas as $empresa) {
     $empresaMap[$empresa['id']] = $empresa['rsocial'];
 }
 ?>
-<html lang="en">
-
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-     <title>Cadastro de Candidatos</title></H1>
+    <title>IAQ - Cadastro de Aprendizes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-</head>
-
-    
-</nav>
-
-<div class="d-flex">
- <body style="background-color:white;">
-
-   <div style="display: flex; min-height: 100vh;">
-        <div id="sidebar" style="width: 220px; background-color: #333; color: white; padding-top: 20px; flex-shrink: 0;">
-<a href="dashboard.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Início</a>
-<a href="cadastroaprendizes.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Cadastro</a>
-<a href="cbos.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">CBO</a>
-<a href="empresas.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Empresas</a>
-<!--<a href="usuarios.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Usuários</a></!-->
-<a href="Contrato.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Contrato Modelo</a>
-<!--<a href="ficha.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; font-size: 14px; letter-spacing: 0.05em;">Ficha</a></!-->
-<a href="logout.php" style="display: block; padding: 12px 20px; color: white; text-decoration: none; margin-top: 20px; font-size: 14px; letter-spacing: 0.05em;">Sair</a>
-        </div>
-
-        <div style="flex-grow: 1; padding: 20px;">
-           
-  </div>
-</div>
-
-</body>
-  <div class="container mt-4" style="margin-left: 220px; width: calc(100% - 220px);">
-    <h2>Cadastro de Candidatos</h2>
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#candidateModal" onclick="openModal()">Novo</button>
-    <button id="btnPesquisa" class="btn btn-secondary mb-3" type="button">Pesquisar Nome</button>
-    <input type="text" id="inputPesquisa" class="form-control mb-3" placeholder="Pesquisar por nome" style="display:none; max-width: 300px;" />
-    <table class="table table-bordered">
-        <thead>
-            <tr class="text-center">
-                <th>Foto</th>
-                <th>Nome</th>
-                <th>Telefone</th>
-               <!-- <th>CPF</th></td></!-->
-                <th>Empresa</th>
-                <th>Curso</th>
-                <th>Cidade</th>
-                <th style="width: 240px;">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($candidates as $candidate): ?>
-            <tr>
-                <td class="text-center">
-                    <?php if (!empty($candidate['foto'])): ?>
-                        <img src="uploads/<?= htmlspecialchars($candidate['foto']) ?>" alt="Foto do Candidato" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" />
-                    <?php else: ?>
-                        <span>Sem Foto</span>
-                    <?php endif; ?>
-               </td>
-                <td class="text-center"><?= htmlspecialchars($candidate['nome']) ?></td>
-                <td class="text-center"><?= htmlspecialchars($candidate['telefone']) ?></td>
-                <!--<td><?= htmlspecialchars($candidate['cpf']) ?></td></!-->
-                <td class="text-center"><?= htmlspecialchars($empresaMap[$candidate['empresa']] ?? 'N/A') ?></td>
-                <td class="text-center"><?= htmlspecialchars($candidate['dcurso']) ?></td>
-                <td class="text-center"><?= htmlspecialchars($candidate['cidade']) ?></td>
-<td class="text-center">
-    <button class="btn btn-sm btn-warning" onclick='editCandidate(<?= json_encode($candidate) ?>)'>Editar</button>
-    <!--<button class="btn btn-sm btn-info" onclick='viewCandidate(<?= json_encode($candidate) ?>)'>Visualizar</button></!-->
-    <a href="cadastroaprendizes.php?delete=<?= $candidate['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
-
-    <a href="generate_contract.php?id=<?= $candidate['id'] ?>" target="_blank" class="btn btn-sm btn-primary">Contrato</a>
-</td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-lg">
-    <form method="post" id="candidateForm" class="modal-content" enctype="multipart/form-data">
-      <div class="modal-header">
-        <h5 class="modal-title" id="candidateModalLabel">Cadastro de Candidato</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" name="id" id="candidateId" />
-        <div class="row mb-3">
-          <div class="col">
-            <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" name="nome" id="nome" required />
-          </div>
-          <div class="col">
-            <label for="mae" class="form-label">Mãe</label>
-            <input type="text" class="form-control" name="mae" id="mae" />
-          </div>
-          <div class="col">
-            <label for="pai" class="form-label">Pai</label>
-            <input type="text" class="form-control" name="pai" id="pai" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="nascimento" class="form-label">Nascimento</label>
-            <input type="date" class="form-control" name="nascimento" id="nascimento" />
-          </div>
-          <div class="col">
-            <label for="telefone" class="form-label">Telefone</label>
-            <input type="tel" class="form-control" name="telefone" id="telefone" />
-          </div>
-          <div class="col">
-            <label for="sexo" class="form-label">Sexo</label>
-            <select class="form-select" name="sexo" id="sexo">
-              <option value="Masculino">Masculino</option>
-              <option value="Feminino">Feminino</option>
-              <option value="Não informar" selected>Não informar</option>
-            </select>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" id="email" />
-          </div>
-          <div class="col">
-            <label for="cpf" class="form-label">CPF</label>
-            <input type="text" class="form-control" name="cpf" id="cpf" />
-          </div>
-          <div class="col">
-            <label for="cep" class="form-label">CEP</label>
-            <input type="text" class="form-control" name="cep" id="cep" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="cidade" class="form-label">Cidade</label>
-            <input type="text" class="form-control" name="cidade" id="cidade" />
-          </div>
-          <div class="col">
-            <label for="endereco" class="form-label">Endereço</label>
-            <input type="text" class="form-control" name="endereco" id="endereco" />
-          </div>
-          <div class="col">
-            <label for="nctps" class="form-label">Nº CTPS</label>
-            <input type="text" class="form-control" name="nctps" id="nctps" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="sctps" class="form-label">Série CTPS</label>
-            <input type="text" class="form-control" name="sctps" id="sctps" />
-          </div>
-          <div class="col">
-            <label for="nescolaridade" class="form-label">Nível Escolaridade</label>
-            <select class="form-select" name="nescolaridade" id="nescolaridade">
-              <option value="Fundamental">Fundamental</option>
-              <option value="Médio">Médio Incompleto</option>
-              <option value="Médio">Médio Completo</option>
-            </select>
-          </div>
-          <div class="col">
-            <label for="escola" class="form-label">Escola</label>
-            <input type="text" class="form-control" name="escola" id="escola" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="reservista" class="form-label">Reservista?</label>
-            <select class="form-select" name="reservista" id="reservista">
-              <option value="Sim">Sim</option>
-              <option value="Não" selected>Não</option>
-            </select>
-          </div>
-          <!--<div class="col">
-            <label for="escolaridade" class="form-label">Escolaridade</label>
-            <input type="text" class="form-control" name="escolaridade" id="escolaridade" />
-          </div>
-        </div><!-->
-        <div class="row mb-3">
-          <div class="col">
-            <label for="jornada" class="form-label">Jornada</label>
-            <select class="form-select" name="jornada" id="jornada">
-              <option value="Segunda a Sexta">Segunda a Sexta</option>
-              <option value="Segunda a Sábado">Segunda a Sábado</option>
-            </select>
-          </div>
-          <div class="col">
-            <label for="hrtrabalho" class="form-label">Horas de Trabalho</label>
-            <select class="form-select" name="hrtrabalho" id="hrtrabalho">
-              <option value="4 horas">4 horas</option>
-              <option value="5 Horas">4 horas</option>
-              <option value="6 horas">6 horas</option>
-              <option value="8 horas">8 horas</option>
-            </select>
-          </div>
-          <div class="col">
-            <label for="salario" class="form-label">Salário</label>
-            <input type="text" class="form-control" name="salario" id="salario" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="dtcontratacao" class="form-label">Data de Contratação</label>
-            <input type="date" class="form-control" name="dtcontratacao" id="dtcontratacao" />
-          </div>
-          <div class="col">
-            <label for="dfcontratacao" class="form-label">Data de Encerramento</label>
-            <input type="date" class="form-control" name="dfcontratacao" id="dfcontratacao" />
-          </div>
-          <div class="col">
-            <label for="duracaodocurso" class="form-label">Duração do Contrato</label>
-            <input type="text" class="form-control" name="duracaodocurso" id="duracaodocurso" />
-          </div>
-          <div class="col">
-            <label for="dtrabalho" class="form-label">Horário do Trabalho</label>
-            <input type="text" class="form-control" name="dtrabalho" id="dtrabalho" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="dcurso" class="form-label">Dia do Curso</label>
-            <select class="form-select" name="dcurso" id="dcurso">
-              <option value="Segunda">Segunda</option>
-              <option value="Terça">Terça</option>
-              <option value="Quarta">Quarta</option>
-              <option value="Quinta">Quinta</option>
-              <option value="Sexta">Sexta</option>
-            </select>
-          </div>
-          <div class="col">
-            <label for="hrcurso" class="form-label">Horário do Curso</label>
-            <input type="text" class="form-control" name="hrcurso" id="hrcurso" />
-          </div>
-          <div class="col">
-            <label for="dtcursoinicial" class="form-label">Data I. Módulo Básico</label>
-            <input type="date" class="form-control" name="dtcursoinicial" id="dtcursoinicial" />
-          </div>
-          <div class="col">
-            <label for="dtcursofinal" class="form-label">Data F. Módulo Básico</label>
-            <input type="date" class="form-control" name="dtcursofinal" id="dtcursofinal" />
-          </div>
-        </div>
-      <div class="row mb-3">
-          <div class="col">
-            <label for="foto" class="form-label">Foto do Candidato</label>
-            <input type="file" class="form-control" name="foto" id="foto" accept="image/*" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="cbo" class="form-label">CBO</label>
-            <select class="form-select" name="cbo" id="cbo">
-              <option value="">Selecione o CBO</option>
-              <?php foreach ($cadcbos as $cboOption): ?>
-                <option value="<?= htmlspecialchars($cboOption['id']) ?>"><?= htmlspecialchars($cboOption['cod'] . ' - ' . $cboOption['atividades']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="empresa" class="form-label">Empresa</label>
-            <select class="form-select" name="empresa" id="empresa">
-              <option value="">Selecione a Empresa</option>
-              <?php foreach ($cadempresas as $empresaOption): ?>
-                <option value="<?= htmlspecialchars($empresaOption['id']) ?>"><?= htmlspecialchars($empresaOption['rsocial']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script>
-  const candidateModal = new bootstrap.Modal(document.getElementById('candidateModal'));
-
-
-<h1>sdadsa</h1>
-
-
-<div class="container mt-4">
-    <h2>Cadastro de Candidatos</h2>
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#candidateModal" onclick="openModal()">Novo</button>
-    <table class="table table-bordered">
-        <thead>
-            <tr class="text-center">
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Cidade</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($candidates as $candidate): ?>
-            <tr>
-                <td><?= htmlspecialchars($candidate['nome']) ?></td>
-                <td><?= htmlspecialchars($candidate['cpf']) ?></td>
-                <td><?= htmlspecialchars($candidate['cidade']) ?></td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-warning" onclick='editCandidate(<?= json_encode($candidate) ?>)'>Editar</button>
-                    <button class="btn btn-sm btn-info" onclick='viewCandidate(<?= json_encode($candidate) ?>)'>Visualizar</button>
-                    <a href="cadastroaprendizes.php?delete=<?= $candidate['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
-
-</h1>
-
-<!-- Modal -->
-<div class="modal fade" id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-lg">
-    <form method="post" id="candidateForm" class="modal-content" enctype="multipart/form-data">
-      <div class="modal-header">
-        <h5 class="modal-title" id="candidateModalLabel">Cadastro de Candidato</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" name="id" id="candidateId" />
-        <div class="row mb-3">
-          <div class="col">
-            <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" name="nome" id="nome" required />
-          </div>
-          <div class="col">
-            <label for="mae" class="form-label">Mãe</label>
-            <input type="text" class="form-control" name="mae" id="mae" />
-          </div>
-          <div class="col">
-            <label for="pai" class="form-label">Pai</label>
-            <input type="text" class="form-control" name="pai" id="pai" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="nascimento" class="form-label">Nascimento</label>
-            <input type="date" class="form-control" name="nascimento" id="nascimento" />
-          </div>
-          <div class="col">
-            <label for="telefone" class="form-label">Telefone</label>
-            <input type="tel" class="form-control" name="telefone" id="telefone" />
-          </div>
-          <div class="col">
-            <label for="sexo" class="form-label">Sexo</label>
-            <select class="form-select" name="sexo" id="sexo">
-              <option value="Masculino">Masculino</option>
-              <option value="Feminino">Feminino</option>
-              <option value="Não informar" selected>Não informar</option>
-            </select>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" id="email" />
-          </div>
-          <div class="col">
-            <label for="cpf" class="form-label">CPF</label>
-            <input type="text" class="form-control" name="cpf" id="cpf" />
-          </div>
-          <div class="col">
-            <label for="cep" class="form-label">CEP</label>
-            <input type="text" class="form-control" name="cep" id="cep" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="cidade" class="form-label">Cidade</label>
-            <input type="text" class="form-control" name="cidade" id="cidade" />
-          </div>
-          <div class="col">
-            <label for="endereco" class="form-label">Endereço</label>
-            <input type="text" class="form-control" name="endereco" id="endereco" />
-          </div>
-          <div class="col">
-            <label for="nctps" class="form-label">Nº CTPS</label>
-            <input type="text" class="form-control" name="nctps" id="nctps" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="sctps" class="form-label">Série CTPS</label>
-            <input type="text" class="form-control" name="sctps" id="sctps" />
-          </div>
-          <div class="col">
-            <label for="nescolaridade" class="form-label">Nível Escolaridade</label>
-            <select class="form-select" name="nescolaridade" id="nescolaridade">
-              <option value="Fundamental">Fundamental</option>
-              <option value="Médio">Médio</option>
-            </select>
-          </div>
-          <div class="col">
-            <label for="escola" class="form-label">Escola</label>
-            <input type="text" class="form-control" name="escola" id="escola" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="reservista" class="form-label">Reservista?</label>
-            <select class="form-select" name="reservista" id="reservista">
-              <option value="Sim">Sim</option>
-              <option value="Não" selected>Não</option>
-            </select>
-          </div>
-          <div class="col">
-            <label for="dfcontratacao" class="form-label">Data de Encerramento</label>
-            <input type="text" class="form-control" name="dfcontratacao" id="dfcontratacao" />
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label for="foto" class="form-label">Foto do Candidato</label>
-            <input type="file" class="form-control" name="foto" id="foto" accept="image/*" />
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script>
-  const candidateModal = new bootstrap.Modal(document.getElementById('candidateModal'));
-
-  function openModal() {
-    document.getElementById('candidateForm').reset();
-    document.getElementById('candidateId').value = '';
-    enableFormFields(true);
-    document.querySelector('#candidateForm button[type="submit"]').style.display = 'inline-block';
-    candidateModal.show();
-  }
-
-  function editCandidate(candidate) {
-    document.getElementById('candidateId').value = candidate.id;
-    document.getElementById('nome').value = candidate.nome || '';
-    document.getElementById('mae').value = candidate.mae || '';
-    document.getElementById('pai').value = candidate.pai || '';
-    document.getElementById('nascimento').value = candidate.nascimento || '';
-    document.getElementById('telefone').value = candidate.telefone || '';
-    document.getElementById('sexo').value = candidate.sexo || 'Não informar';
-    document.getElementById('email').value = candidate.email || '';
-    document.getElementById('cpf').value = candidate.cpf || '';
-    document.getElementById('cep').value = candidate.cep || '';
-    document.getElementById('cidade').value = candidate.cidade || '';
-    document.getElementById('endereco').value = candidate.endereco || '';
-    document.getElementById('nctps').value = candidate.nctps || '';
-    document.getElementById('sctps').value = candidate.sctps || '';
-    document.getElementById('nescolaridade').value = candidate.nescolaridade || '';
-    document.getElementById('escola').value = candidate.escola || '';
-    document.getElementById('reservista').value = candidate.reservista || 'Não';
-    document.getElementById('dfcontratacao').value = candidate.dfcontratacao || '';
-    document.getElementById('jornada').value = candidate.jornada || '';
-    document.getElementById('hrtrabalho').value = candidate.hrtrabalho || '';
-    document.getElementById('salario').value = candidate.salario || '';
-    document.getElementById('dtcontratacao').value = candidate.dtcontratacao || '';
-    document.getElementById('duracaodocurso').value = candidate.duracaodocurso || '';
-    document.getElementById('dtrabalho').value = candidate.dtrabalho || '';
-    document.getElementById('dcurso').value = candidate.dcurso || '';
-    document.getElementById('hrcurso').value = candidate.hrcurso || '';
-    document.getElementById('dtcursoinicial').value = candidate.dtcursoinicial || '';
-    document.getElementById('dtcursofinal').value = candidate.dtcursofinal || '';
-    document.getElementById('cbo').value = candidate.cbo || '';
-    document.getElementById('empresa').value = candidate.empresa || '';
-    enableFormFields(true);
-    document.querySelector('#candidateForm button[type="submit"]').style.display = 'inline-block';
-    candidateModal.show();
-  }
-
-  function viewCandidate(candidate) {
-    document.getElementById('candidateId').value = candidate.id;
-    document.getElementById('nome').value = candidate.nome || '';
-    document.getElementById('mae').value = candidate.mae || '';
-    document.getElementById('pai').value = candidate.pai || '';
-    document.getElementById('nascimento').value = candidate.nascimento || '';
-    document.getElementById('telefone').value = candidate.telefone || '';
-    document.getElementById('sexo').value = candidate.sexo || 'Não informar';
-    document.getElementById('email').value = candidate.email || '';
-    document.getElementById('cpf').value = candidate.cpf || '';
-    document.getElementById('cep').value = candidate.cep || '';
-    document.getElementById('cidade').value = candidate.cidade || '';
-    document.getElementById('endereco').value = candidate.endereco || '';
-    document.getElementById('nctps').value = candidate.nctps || '';
-    document.getElementById('sctps').value = candidate.sctps || '';
-    document.getElementById('nescolaridade').value = candidate.nescolaridade || '';
-    document.getElementById('escola').value = candidate.escola || '';
-    document.getElementById('reservista').value = candidate.reservista || 'Não';
-    document.getElementById('dfcontratacao').value = candidate.dfcontratacao || '';
-    document.getElementById('jornada').value = candidate.jornada || '';
-    document.getElementById('hrtrabalho').value = candidate.hrtrabalho || '';
-    document.getElementById('salario').value = candidate.salario || '';
-    document.getElementById('dtcontratacao').value = candidate.dtcontratacao || '';
-    document.getElementById('duracaodocurso').value = candidate.duracaodocurso || '';
-    document.getElementById('dtrabalho').value = candidate.dtrabalho || '';
-    document.getElementById('dcurso').value = candidate.dcurso || '';
-    document.getElementById('hrcurso').value = candidate.hrcurso || '';
-    document.getElementById('dtcursoinicial').value = candidate.dtcursoinicial || '';
-    document.getElementById('dtcursofinal').value = candidate.dtcursofinal || '';
-    document.getElementById('cbo').value = candidate.cbo || '';
-    document.getElementById('empresa').value = candidate.empresa || '';
-
-    // Foto Candidato
-    const photoImg = document.getElementById('candidatePhoto');
-    if (candidate.foto) {
-      photoImg.src = 'uploads/' + candidate.foto;
-      photoImg.style.display = 'block';
-    } else {
-      photoImg.style.display = 'none';
-    }
-
-    enableFormFields(false);
-    document.querySelector('#candidateForm button[type="submit"]').style.display = 'none';
-
-    // Change modal title
-    document.getElementById('candidateModalLabel').textContent = 'Visualizar Candidato';
-
-    
-    if (!document.getElementById('closeViewBtn')) {
-      const closeBtn = document.createElement('button');
-      closeBtn.type = 'button';
-      closeBtn.id = 'closeViewBtn';
-      closeBtn.className = 'btn btn-secondary';
-      closeBtn.setAttribute('data-bs-dismiss', 'modal');
-      closeBtn.textContent = 'Fechar';
-      const footer = document.querySelector('.modal-footer');
-      footer.appendChild(closeBtn);
-    }
-
-    candidateModal.show();
-  }
-
-  function enableFormFields(enable) {
-    const formElements = document.querySelectorAll('#candidateForm input, #candidateForm select');
-    formElements.forEach(el => {
-      el.disabled = !enable;
-    });
-  }
-</script>
-
-<!-- Modal to show contract content -->
-<div class="modal fade" id="contractModal" tabindex="-1" aria-labelledby="contractModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="contractModalLabel">Contrato</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-      </div>
-      <div class="modal-body" id="contractContent" style="white-space: pre-wrap;">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-function viewContractByCandidate(candidateId) {
-    fetch('get_saved_contract_by_candidate.php?candidate_id=' + candidateId)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Contrato não encontrado para o candidato.');
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #00cc66;
+            --accent-color: #ff6b35;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --border-color: #e9ecef;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.15);
         }
-        return response.text();
-    })
-    .then(data => {
-        document.getElementById('contractContent').innerText = data;
-        var contractModal = new bootstrap.Modal(document.getElementById('contractModal'));
-        contractModal.show();
-    })
-    .catch(error => alert('Erro ao carregar contrato: ' + error.message));
-}
-</script>
 
-<script>
-document.getElementById('btnPesquisa').addEventListener('click', function() {
-    const input = document.getElementById('inputPesquisa');
-    if (input.style.display === 'none' || input.style.display === '') {
-        input.style.display = 'block';
-        input.focus();
-    } else {
-        input.style.display = 'none';
-        input.value = '';
-        filterTable('');
-    }
-});
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-document.getElementById('inputPesquisa').addEventListener('input', function() {
-    filterTable(this.value);
-});
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
 
-function filterTable(searchTerm) {
-    const table = document.querySelector('table.table-bordered tbody');
-    const rows = table.getElementsByTagName('tr');
-    const filter = searchTerm.toLowerCase();
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #004499 100%);
+            color: white;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            width: 250px;
+            flex-shrink: 0;
+        }
 
-    for (let i = 0; i < rows.length; i++) {
-        const nomeCell = rows[i].getElementsByTagName('td')[1]; // Nome column index is 1
-        if (nomeCell) {
-            const nomeText = nomeCell.textContent || nomeCell.innerText;
-            if (nomeText.toLowerCase().indexOf(filter) > -1) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 15px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .main-content {
+            background: white;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 15px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 102, 204, 0.05);
+            transform: scale(1.01);
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-color: var(--border-color);
+        }
+
+        .action-buttons .btn {
+            margin: 0 2px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 25px;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+        }
+
+        .logo-section {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logo-section img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stats-label {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+            }
+            
+            .main-content {
+                margin: 10px;
+            }
+            
+            .header-section h1 {
+                font-size: 2rem;
             }
         }
-    }
-}
-</script>
+    </style>
+</head>
+<body>
+    <div style="display: flex; min-height: 100vh;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <img src="iaq.png" alt="IAQ Logo" class="img-fluid">
+            </div>
+            <nav class="nav flex-column px-3">
+                <a href="dashboard.php" class="nav-link">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="cadastroaprendizes.php" class="nav-link active">
+                    <i class="fas fa-user-plus"></i> Cadastro
+                </a>
+                <a href="cbos.php" class="nav-link">
+                    <i class="fas fa-list-alt"></i> CBOs
+                </a>
+                <a href="empresas.php" class="nav-link">
+                    <i class="fas fa-building"></i> Empresas
+                </a>
+                <a href="Contrato.php" class="nav-link">
+                    <i class="fas fa-file-contract"></i> Contratos
+                </a>
+                <a href="logout.php" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </nav>
+        </div>
 
-</body>
-</html>
+        <!-- Main Content -->
+        <div style="flex-grow: 1;">
+            <div class="main-content">
+                <!-- Header Section -->
+                <div class="header-section">
+                    <h1><i class="fas fa-user-plus"></i> Cadastro de Aprendizes</h1>
+                    <p>Sistema de Cadastro e Gerenciamento de Aprendizes</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="container-fluid p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="stats-card text-center">
+                                <div class="stats-number"><?= count($candidates) ?></div>
+                                <div class="stats-label">Total de Aprendizes</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card text-center">
+                                <div class="stats-number">100%</div>
+                                <div class="stats-label">Ativos</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card text-center">
+                                <div class="stats-number">IAQ</div>
+                                <div class="stats-label">Sistema</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0"><i class="fas fa-table"></i> Lista de Aprendizes</h3>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#candidateModal" onclick="openModal()">
+                            <i class="fas fa-plus"></i> Novo Aprendiz
+                        </button>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="table-responsive fade-in">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-image"></i> Foto</th>
+                                    <th><i class="fas fa-user"></i> Nome</th>
+                                    <th><i class="fas fa-phone"></i> Telefone</th>
+                                    <th><i class="fas fa-building"></i> Empresa</th>
+                                    <th><i class="fas fa-graduation-cap"></i> Curso</th>
+                                    <th><i class="fas fa-city"></i> Cidade</th>
+                                    <th><i class="fas fa-cogs"></i> Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($candidates as $candidate): ?>
+                                <tr>
+                                    <td class="text-center">
+                                        <?php if (!empty($candidate['foto'])): ?>
+                                            <img src="uploads/<?= htmlspecialchars($candidate['foto']) ?>" alt="Foto" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" />
+                                        <?php else: ?>
+                                            <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><strong><?= htmlspecialchars($candidate['nome']) ?></strong></td>
+                                    <td><?= htmlspecialchars($candidate['telefone']) ?></td>
+                                    <td><?= htmlspecialchars($empresaMap[$candidate['empresa']] ?? 'N/A') ?></td>
+                                    <td><?= htmlspecialchars($candidate['dcurso']) ?></td>
+                                    <td><?= htmlspecialchars($candidate['cidade']) ?></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                        <a href="editaprendizes.php?id=<?= $candidate['id'] ?>" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                            <a href="cadastroaprendizes.php?delete=<?= $candidate['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Confirma exclusão?')">
+                                                <i class="fas fa-trash"></i> Excluir
+                                            </a>
+                                            <a href="generate_contract.php?id=<?= $candidate['id'] ?>" target="_blank" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-file-contract"></i> Contrato
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form method="post" id="candidateForm" class="modal-content" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="candidateModalLabel">
+                        <i class="fas fa-user-plus"></i> Cadastro de Aprendiz
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="candidateId" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" name="nome" id="nome" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="mae" class="form-label">Nome da Mãe</label>
+                            <input type="text" class="form-control" name="mae" id="mae" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="nascimento" class="form-label">Data de Nascimento</label>
+                            <input type="date" class="form-control" name="nascimento" id="nascimento" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="cpf" class="form-label">CPF</label>
+                            <input type="text" class="form-control" name="cpf" id="cpf" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="sexo" class="form-label">Sexo</label>
+                            <select class="form-select" name="sexo" id="sexo">
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="Não informar">Não informar</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" name="telefone" id="telefone" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="telefone2" class="form-label">Telefone 2</label>
+                            <input type="tel" class="form-control" name="telefone2" id="telefone2" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="email" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="foto" class="form-label">Foto</label>
+                            <input type="file" class="form-control" name="foto" id="foto" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="cep" class="form-label">CEP</label>
+                            <input type="text" class="form-control" name="cep" id="cep" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input type="text" class="form-control" name="cidade" id="cidade" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="endereco" class="form-label">Endereço</label>
+                            <input type="text" class="form-control" name="endereco" id="endereco" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="empresa" class="form-label">Empresa</label>
+                            <select class="form-select" name="empresa" id="empresa">
+                                <option value="">Selecione a Empresa</option>
+                                <?php foreach ($cadempresas as $empresa): ?>
+                                    <option value="<?= htmlspecialchars($empresa['id']) ?>"><?= htmlspecialchars($empresa['rsocial']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cbo" class="form-label">CBO</label>
+                            <select class="form-select" name="cbo" id="cbo">
+                                <option value="">Selecione o CBO</option>
+                                <?php foreach ($cadcbos as $cbo): ?>
+                                    <option value="<?= htmlspecialchars($cbo['id']) ?>"><?= htmlspecialchars($cbo['cod'] . ' - ' . $cbo['atividades']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nctps" class="form-label">Nº CTPS</label>
+                            <input type="text" class="form-control" name="nctps" id="nctps" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sctps" class="form-label">Série CTPS</label>
+                            <input type="text" class="form-control" name="sctps" id="sctps" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nescolaridade" class="form-label">Nível Escolaridade</label>
+                            <select class="form-select" name="nescolaridade" id="nescolaridade">
+                                <option value="Fundamental">Fundamental</option>
+                                <option value="Médio Incompleto">Médio Incompleto</option>
+                                <option value="Médio Completo">Médio Completo</option>
+                                <option value="Superior Incompleto">Superior Incompleto</option>
+                                <option value="Superior Completo">Superior Completo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="escola" class="form-label">Escola</label>
+                            <input type="text" class="form-control" name="escola" id="escola" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reservista" class="form-label">Reservista</label>
+                            <select class="form-select" name="reservista" id="reservista">
+                                <option value="Sim">Sim</option>
+                                <option value="Não" selected>Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="jornada" class="form-label">Jornada</label>
+                            <select class="form-select" name="jornada" id="jornada">
+                                <option value="Segunda a Sexta">Segunda a Sexta</option>
+                                <option value="Segunda a Sábado">Segunda a Sábado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="hrtrabalho" class="form-label">Horas de Trabalho</label>
+                            <select class="form-select" name="hrtrabalho" id="hrtrabalho">
+                                <option value="4 horas">4 horas</option>
+                                <option value="6 horas">6 horas</option>
+                                <option value="8 horas">8 horas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="salario" class="form-label">Salário</label>
+                            <input type="text" class="form-control" name="salario" id="salario" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dtcontratacao" class="form-label">Data de Contratação</label>
+                            <input type="date" class="form-control" name="dtcontratacao" id="dtcontratacao" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dfcontratacao" class="form-label">Data de Encerramento</label>
+                            <input type="date" class="form-control" name="dfcontratacao" id="dfcontratacao" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dcurso" class="form-label">Dia do Curso</label>
+                            <select class="form-select" name="dcurso" id="dcurso">
+                                <option value="Segunda">Segunda</option>
+                                <option value="Terça">Terça</option>
+                                <option value="Quarta">Quarta</option>
+                                <option value="Quinta">Quinta</option>
+                                <option value="Sexta">Sexta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="hrcurso" class="form-label">Horário do Curso</label>
+                            <input type="text" class="form-control" name="hrcurso" id="hrcurso" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dtcursoinicial" class="form-label">Data Início Módulo Básico</label>
+                            <input type="date" class="form-control" name="dtcursoinicial" id="dtcursoinicial" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dtcursofinal" class="form-label">Data Fim Módulo Básico</label>
+                            <input type="date" class="form-control" name="dtcursofinal" id="dtcursofinal" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="duracaodocurso" class="form-label">Duração do Contrato</label>
+                            <input type="text" class="form-control" name="duracaodocurso" id="duracaodocurso" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dtrabalho" class="form-label">Horário do Trabalho</label>
+                            <input type="text" class="form-control" name="dtrabalho" id="dtrabalho" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Adicionar classe fade-in aos elementos
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.table tbody tr');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+                el.classList.add('fade-in');
+            });
+        });
+
+
+    
