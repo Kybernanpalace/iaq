@@ -397,16 +397,26 @@ $empresas_items = $stmt->fetchAll();
                         </div>
                     </div>
 
-                    <!-- Search and Action Buttons -->
+                    <!-- Action Buttons -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="mb-0"><i class="fas fa-table"></i> Lista de Empresas</h3>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="search-container">
-                                <i class="fas fa-search search-icon"></i>
-                                <input type="text" class="search-input" id="searchInput" placeholder="Pesquisar empresas...">
-                            </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-info" id="btnBuscar" onclick="toggleSearch()">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal" onclick="openModal()">
                                 <i class="fas fa-plus"></i> Nova Empresa
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Field -->
+                    <div id="searchContainer" style="display: none;" class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Digite o nome para buscar..." onkeyup="filterTable()">
+                            <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
@@ -625,14 +635,70 @@ $empresas_items = $stmt->fetchAll();
         }
 
         // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.table tbody tr');
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            const searchInput = document.getElementById('searchInput');
             
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
+            if (searchContainer.style.display === 'none') {
+                searchContainer.style.display = 'block';
+                searchInput.focus();
+            } else {
+                searchContainer.style.display = 'none';
+                searchInput.value = '';
+                filterTable(); // Clear filter when hiding
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            filterTable();
+            document.getElementById('searchContainer').style.display = 'none';
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.querySelector('.table tbody');
+            const rows = table.getElementsByTagName('tr');
+            
+            let visibleCount = 0;
+            
+            for (let i = 0; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[1]; // Razão Social column
+                const cnpjCell = rows[i].getElementsByTagName('td')[0]; // CNPJ column
+                const fantasiaCell = rows[i].getElementsByTagName('td')[2]; // Nome Fantasia column
+                
+                if (nameCell || cnpjCell || fantasiaCell) {
+                    const nameText = (nameCell ? (nameCell.textContent || nameCell.innerText) : '') + 
+                                    (cnpjCell ? (cnpjCell.textContent || cnpjCell.innerText) : '') +
+                                    (fantasiaCell ? (fantasiaCell.textContent || fantasiaCell.innerText) : '');
+                    
+                    if (nameText.toLowerCase().indexOf(searchTerm) > -1) {
+                        rows[i].style.display = '';
+                        visibleCount++;
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+            
+            // Update stats
+            const statsNumber = document.querySelector('.stats-number');
+            if (statsNumber) {
+                statsNumber.textContent = visibleCount;
+            }
+        }
+
+        // Close search when clicking outside
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.getElementById('searchContainer');
+            const btnBuscar = document.getElementById('btnBuscar');
+            
+            if (!searchContainer.contains(event.target) && !btnBuscar.contains(event.target)) {
+                if (searchContainer.style.display === 'block' && document.getElementById('searchInput').value === '') {
+                    searchContainer.style.display = 'none';
+                }
+            }
         });
 
         // Adicionar feedback visual ao salvar
@@ -644,5 +710,4 @@ $empresas_items = $stmt->fetchAll();
     </script>
 </body>
 </html>
-<question>Should I proceed with applying the modern teste.php layout to empresas.php? This will completely transform the appearance and user experience of the empresas page.</question>
-</ask_followup_question>
+

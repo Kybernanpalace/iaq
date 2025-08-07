@@ -411,9 +411,25 @@ foreach ($cadempresas as $empresa) {
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="mb-0"><i class="fas fa-table"></i> Lista de Aprendizes</h3>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#candidateModal" onclick="openModal()">
-                            <i class="fas fa-plus"></i> Novo Aprendiz
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-info" id="btnBuscar" onclick="toggleSearch()">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#candidateModal" onclick="openModal()">
+                                <i class="fas fa-plus"></i> Novo Aprendiz
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Field -->
+                    <div id="searchContainer" style="display: none;" class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Digite o nome para buscar..." onkeyup="filterTable()">
+                            <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Data Table -->
@@ -468,7 +484,7 @@ foreach ($cadempresas as $empresa) {
         </div>
     </div>
 
-    <!-- Modal -->
+ <!-- Modal -->
     <div class="modal fade" id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <form method="post" id="candidateForm" class="modal-content" enctype="multipart/form-data">
@@ -488,6 +504,10 @@ foreach ($cadempresas as $empresa) {
                         <div class="col-md-6 mb-3">
                             <label for="mae" class="form-label">Nome da Mãe</label>
                             <input type="text" class="form-control" name="mae" id="mae" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="pai" class="form-label">Nome da Pai</label>
+                            <input type="text" class="form-control" name="pai" id="pai" />
                         </div>
                     </div>
                     <div class="row">
@@ -630,6 +650,16 @@ foreach ($cadempresas as $empresa) {
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
+                            <label for="duracaodocurso" class="form-label">Duração do Contrato</label>
+                            <input type="text" class="form-control" name="duracaodocurso" id="duracaodocurso" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dtrabalho" class="form-label">Horário do Trabalho</label>
+                            <input type="text" class="form-control" name="dtrabalho" id="dtrabalho" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label for="dcurso" class="form-label">Dia do Curso</label>
                             <select class="form-select" name="dcurso" id="dcurso">
                                 <option value="Segunda">Segunda</option>
@@ -654,16 +684,7 @@ foreach ($cadempresas as $empresa) {
                             <input type="date" class="form-control" name="dtcursofinal" id="dtcursofinal" />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="duracaodocurso" class="form-label">Duração do Contrato</label>
-                            <input type="text" class="form-control" name="duracaodocurso" id="duracaodocurso" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="dtrabalho" class="form-label">Horário do Trabalho</label>
-                            <input type="text" class="form-control" name="dtrabalho" id="dtrabalho" />
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -687,6 +708,68 @@ foreach ($cadempresas as $empresa) {
                 el.classList.add('fade-in');
             });
         });
+
+        // Search functionality
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchContainer.style.display === 'none') {
+                searchContainer.style.display = 'block';
+                searchInput.focus();
+            } else {
+                searchContainer.style.display = 'none';
+                searchInput.value = '';
+                filterTable(); // Clear filter when hiding
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            filterTable();
+            document.getElementById('searchContainer').style.display = 'none';
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.querySelector('.table tbody');
+            const rows = table.getElementsByTagName('tr');
+            
+            let visibleCount = 0;
+            
+            for (let i = 0; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[1]; // Nome column
+                if (nameCell) {
+                    const nameText = nameCell.textContent || nameCell.innerText;
+                    if (nameText.toLowerCase().indexOf(searchTerm) > -1) {
+                        rows[i].style.display = '';
+                        visibleCount++;
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+            
+            // Update stats if needed
+            const statsNumber = document.querySelector('.stats-number');
+            if (statsNumber) {
+                statsNumber.textContent = visibleCount;
+            }
+        }
+
+        // Close search when clicking outside
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.getElementById('searchContainer');
+            const btnBuscar = document.getElementById('btnBuscar');
+            
+            if (!searchContainer.contains(event.target) && !btnBuscar.contains(event.target)) {
+                if (searchContainer.style.display === 'block' && document.getElementById('searchInput').value === '') {
+                    searchContainer.style.display = 'none';
+                }
+            }
+        });
+    </script>
 
 
     
